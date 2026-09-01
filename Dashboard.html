@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="https://js.paystack.co/v1/inline.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - InvestPro</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+    body{background:#030712;color:#E5E7EB;min-height:100vh}
+
+    .header{display:flex;justify-content:space-between;align-items:center;padding:20px 30px;background:#111827;border-bottom:1px solid #1F2937}
+    .header h2{font-size:20px}
+    .header button{padding:8px 16px;background:#EF4444;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600}
+
+    .container{padding:30px;max-width:1100px;margin:0 auto}
+
+    /* TOP CARDS */
+    .top-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-bottom:30px}
+    .card{background:#111827;border:1px solid #1F2937;padding:20px;border-radius:16px}
+    .card p{color:#9CA3AF;font-size:13px}
+    .card h1{font-size:28px;margin:10px 0}
+    .card .sub{color:#4ADE80;font-size:12px}
+
+    /* ACTION BUTTONS */
+    .actions{display:flex;gap:15px;margin-bottom:30px}
+    .btn{padding:12px 20px;border:none;border-radius:10px;font-weight:700;cursor:pointer}
+    .btn-deposit{background:#22C55E;color:white}
+    .btn-withdraw{background:#3B82F6;color:white}
+    .btn-invite{background:#8B5CF6;color:white}
+
+    /* PLANS */
+    .section-title{font-size:20px;margin-bottom:15px;font-weight:700}
+    .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+    .plan{background:#111827;border:1px solid #1F2937;padding:25px;border-radius:16px;transition:0.3s}
+    .plan:hover{border-color:#8B5CF6}
+    .plan .tag{display:inline-block;background:#8B5CF6;padding:4px 10px;border-radius:20px;font-size:11px;margin-bottom:10px}
+    .plan h3{font-size:18px}
+    .plan .roi{font-size:32px;font-weight:800;color:#22C55E;margin:10px 0}
+    .plan .detail{display:flex;justify-content:space-between;color:#9CA3AF;font-size:14px;margin:5px 0}
+    .btn-invest{width:100%;padding:12px;background:linear-gradient(90deg,#22C55E,#3B82F6);color:white;border:none;border-radius:10px;font-weight:800;margin-top:15px;cursor:pointer}
+
+    /* MODAL */
+    .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);justify-content:center;align-items:center;z-index:100}
+    .modal-content{background:#111827;padding:30px;border-radius:16px;width:90%;max-width:420px;border:1px solid #1F2937}
+    .modal-content h2{margin-bottom:15px}
+    .modal-content input{width:100%;padding:14px;margin:15px 0;border-radius:10px;border:1px solid #374151;background:#030712;color:white}
+    .modal-content .btn{width:100%}
+    
+    .ref-box{background:#1F2937;padding:15px;border-radius:10px;margin-top:15px}
+    .ref-box input{width:100%;background:#030712;border:1px solid #374151;color:#8B5CF6;padding:10px;border-radius:8px}
+  </style>
+</head>
+<body>
+  <script type="module">
+  import { requireAuth, getProfile, logout } from './assets/js/supabase.js'
+  
+  // THIS LINE RUNS FIRST. If not logged in = redirect to login.html
+  const currentUser = await requireAuth() 
+  
+  // ... rest of your dashboard code
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script type="module">
+  import { requireAuth, getProfile, logout } from './assets/js/supabase.js'
+  const SUPABASE_URL = 'https://oatkpqfhaqnqlpgmuoxe.supabase.co'
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hdGtwcWZoYXFucWxwZ211b3hlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxNDI4MzAsImV4cCI6MjEwMzcxODgzMH0.qirRtKQdQPjQjeeohBU0mf-bB61nK0tNmQ6sEjHon_M'
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+  let currentUser;
+  let userProfile;
+  let txType = '';
+
+  // INIT
+  async function init(){
+    currentUser = await requireAuth()
+    await loadUser()
+  }
+  init()
+
+  async function loadUser(){
+    const { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single()
+    userProfile = data
+    document.getElementById('balance').innerText = data.balance.toLocaleString()
+    document.getElementById('earned').innerText = data.total_earned.toLocaleString()
+    
+    // referral count
+    const { count } = await supabase.from('profiles').select('*', {count: 'exact'}).eq('referred_by', currentUser.id)
+    document.getElementById('refs').innerText = count
+    document.getElementById('refLink').value = `https://yourapp.netlify.app/signup.html?ref=${data.referral_code}`
+  }
+
+  // MODALS
+  window.openModal = (type) => {
+    txType = type
+    document.getElementById('modalTitle').innerText = type === 'deposit' ? 'Deposit Funds' : 'Withdraw Funds'
+    document.getElementById('modalBtn').innerText = type === 'deposit' ? 'Request Deposit' : 'Request Withdrawal'
+    document.getElementById('modal').style.display = 'flex'
+  }
+  window.closeModal = () => document.getElementById('modal').style.display = 'none'
+  
+  window.openInvite = () => document.getElementById('inviteModal').style.display = 'flex'
+  window.closeInvite = () => document.getElementById('inviteModal').style.display = 'none'
+
+  // DEPOSIT / WITHDRAW
+  window.startDeposit = async (amount) => {
+  const user = await requireAuth()
+  const profile = await getProfile()
+
+  let handler = PaystackPop.setup({
+    key: 'pk_test_YOUR_PUBLIC_KEY', // Get from paystack.com
+    email: profile.email,
+    amount: amount * 100, // Paystack is in kobo
+    currency: "NGN",
+    ref: 'INV'+Math.floor((Math.random() * 1000000) + 1),
+    metadata: { user_id: user.id },
+    callback: function(response){
+      verifyPayment(response.reference, amount, user.id)
+    },
+    onClose: function(){ alert('Payment cancelled') }
+  });
+  handler.openIframe();
+}
+
+async function verifyPayment(reference, amount, userId){
+  // Call your backend to verify. For now we trust and credit
+  const { data: profile } = await supabase.from('profiles').select('balance').eq('id', userId).single()
+  await supabase.from('profiles').update({balance: profile.balance + amount}).eq('id', userId)
+  await supabase.from('transactions').insert([{user_id: userId, type:'deposit', amount, status:'approved', reference}])
+  alert('Deposit successful! ₦'+amount)
+  loadUser()
+}
+
+  // INVEST
+// INVEST - ONLY ALLOWS LOGGED IN USERS
+window.invest = async (amount, roi, days) => {
+  // STEP 1: GUARD - KICK OUT IF NOT LOGGED IN
+  const user = await requireAuth()
+  if(!user) return // stops here if not logged in
+  
+  // STEP 2: GET LATEST PROFILE
+  const profile = await getProfile()
+  if(!profile) return
+
+  // STEP 3: CHECK BALANCE
+  if(profile.balance < amount) {
+    alert('Insufficient Balance. Please deposit first.')
+    openModal('deposit') // open deposit modal
+    return
+  }
+
+  // STEP 4: DEDUCT AND SAVE INVESTMENT
+  const newBalance = profile.balance - amount
+  await supabase.from('profiles').update({balance: newBalance}).eq('id', user.id)
+  
+  await supabase.from('investments').insert([{
+    user_id: user.id,
+    amount: amount, 
+    roi: roi, 
+    days: days,
+    start_date: new Date(),
+    end_date: new Date(Date.now() + days * 24 * 60 * 60 * 1000),
+    status: 'active'
+  }])
+
+  alert(`Success! You invested ₦${amount.toLocaleString()}. You will earn ${roi}% daily for ${days} days`)
+  loadUser() // refresh balance
+}
+
+  // COPY REF
+  window.copyRef = () => {
+    navigator.clipboard.writeText(document.getElementById('refLink').value)
+    alert('Referral link copied!')
+  }
+
+  window.logoutBtn = logout
+</script>
+
+<div class="header">
+  <h2>InvestPro Dashboard</h2>
+  <button onclick="logoutBtn()">Logout</button>
+</div>
+
+<div class="container">
+  <!-- STATS -->
+  <div class="top-grid">
+    <div class="card">
+      <p>Account Balance</p>
+      <h1>₦<span id="balance">0</span></h1>
+      <p class="sub">Available to invest</p>
+    </div>
+    <div class="card">
+      <p>Total Earned</p>
+      <h1>₦<span id="earned">0</span></h1>
+      <p class="sub">From investments + referrals</p>
+    </div>
+    <div class="card">
+      <p>Total Referrals</p>
+      <h1><span id="refs">0</span></h1>
+      <p class="sub">Earn 10% of their first deposit</p>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions">
+    <button class="btn btn-deposit" onclick="openModal('deposit')">+ Deposit</button>
+    <button class="btn btn-withdraw" onclick="openModal('withdraw')">- Withdraw</button>
+    <button class="btn btn-invite" onclick="openInvite()">👥 Invite Friends</button>
+  </div>
+
+  <!-- INVESTMENT PLANS -->
+  <h2 class="section-title">Investment Plans</h2>
+  <div class="plans">
+    <div class="plan">
+      <span class="tag">POPULAR</span>
+      <h3>Starter Plan</h3>
+      <div class="detail"><span>Minimum</span><span>₦10,000</span></div>
+      <div class="detail"><span>Duration</span><span>7 Days</span></div>
+      <div class="roi">5% Daily</div>
+      <button class="btn-invest" onclick="invest(10000, 5, 7)">Invest Now</button>
+    </div>
+
+    <div class="plan">
+      <span class="tag" style="background:#3B82F6">PRO</span>
+      <h3>Pro Plan</h3>
+      <div class="detail"><span>Minimum</span><span>₦50,000</span></div>
+      <div class="detail"><span>Duration</span><span>14 Days</span></div>
+      <div class="roi">10% Daily</div>
+      <button class="btn-invest" onclick="invest(50000, 10, 14)">Invest Now</button>
+    </div>
+
+    <div class="plan">
+      <span class="tag" style="background:#EF4444">VIP</span>
+      <h3>VIP Plan</h3>
+      <div class="detail"><span>Minimum</span><span>₦200,000</span></div>
+      <div class="detail"><span>Duration</span><span>30 Days</span></div>
+      <div class="roi">20% Daily</div>
+      <button class="btn-invest" onclick="invest(200000, 20, 30)">Invest Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- DEPOSIT/WITHDRAW MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h2 id="modalTitle">Deposit</h2>
+    <p style="color:#9CA3AF">Enter amount in Naira</p>
+    <input type="number" id="amount" placeholder="₦ 10,000">
+    <button class="btn btn-deposit" onclick="startDeposit(parseFloat(document.getElementById('amount').value))">Pay with Paystack</button>
+    <button class="btn" style="background:#374151;margin-top:10px" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- INVITE MODAL -->
+<div class="modal" id="inviteModal">
+  <div class="modal-content">
+    <h2>Invite & Earn</h2>
+    <p style="color:#9CA3AF">Share your link. You get 10% of your friend's first deposit.</p>
+    <div class="ref-box">
+      <p style="margin-bottom:8px">Your Referral Link:</p>
+      <input type="text" id="refLink" readonly>
+    </div>
+    <button class="btn btn-invite" onclick="copyRef()" style="margin-top:15px">Copy Link</button>
+    <button class="btn" style="background:#374151;margin-top:10px" onclick="closeInvite()">Close</button>
+  </div>
+</div>
+
+</body>
+</html>

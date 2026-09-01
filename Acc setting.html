@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Account Settings - InvestPro</title>
+  <style>
+    body{font-family:sans-serif;background:#Fffff8;padding:20px}
+    .card{max-width:500px;margin:0 auto;background:white;padding:30px;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,0.05)}
+    input{width:100%;padding:12px;margin:10px 0;border:1px solid #ddd;border-radius:8px}
+    .btn{background:#16A34A;color:blue;border:none;padding:12px 20px;border-radius:8px;font-weight:600;cursor:pointer;width:100%}
+    .btn:hover{opacity:0.9}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Bank Account Details</h2>
+    <p style="color:#64748B">Add your bank details to enable withdrawals</p>
+    
+    <label>Bank Name</label>
+    <input type="text" id="bankName" placeholder="e.g. GTBank, Access Bank, opay">
+
+    <label>Account Number</label>
+    <input type="text" id="accountNumber" placeholder="10 digit account number">
+
+    <label>Account Name</label>
+    <input type="text" id="accountName" placeholder="Name on your bank account">
+
+    <button class="btn" onclick="saveProfile()">Save Details</button>
+    <p id="msg" style="color:green;text-align:center;margin-top:10px"></p>
+    <br>
+    <a href="dashboard.html">← Back to Dashboard</a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/app.js"></script>
+  <script>
+  async function loadProfile() {
+    const user = await checkAuth()
+    const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+    
+    document.getElementById('bankName').value = data.bank_name || ''
+    document.getElementById('accountNumber').value = data.account_number || ''
+    document.getElementById('accountName').value = data.account_name || ''
+  }
+
+  async function saveProfile() {
+    const user = await checkAuth()
+    const bank_name = document.getElementById('bankName').value
+    const account_number = document.getElementById('accountNumber').value
+    const account_name = document.getElementById('accountName').value
+
+    const { error } = await supabase.from('profiles')
+      .update({ bank_name, account_number, account_name })
+      .eq('id', user.id)
+
+    if(error) alert(error.message)
+    else {
+      document.getElementById('msg').innerText = 'Saved successfully!'
+      setTimeout(() => document.getElementById('msg').innerText = '', 3000)
+    }
+  }
+
+  loadProfile()
+  </script>
+</body>
+</html>
