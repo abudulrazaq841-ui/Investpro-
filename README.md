@@ -1,2 +1,2 @@
 # Investpro-
-Investment platform with supabase and + paystack 
+Investment platform with supabase + paystack 
