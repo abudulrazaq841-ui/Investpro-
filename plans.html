@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Investment Plans - InvestPro</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<header>
+    <div class="logo">InvestPro</div>
+
+    <nav>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="plans.html">Plans</a>
+        <a href="#" id="logoutBtn">Logout</a>
+    </nav>
+</header>
+
+<section class="features plans-page">
+
+    <p class="hero-label">📊 DEMO INVESTMENT PLANS</p>
+
+    <h2>Choose a Demo Plan</h2>
+
+    <p class="section-text">
+        Explore the available demo plans and compare their
+        duration and return rates.
+    </p>
+
+    <div id="plansContainer" class="cards">
+        <p>Loading plans...</p>
+    </div>
+
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/dashboard.js"></script>
+
+<script>
+async function loadPlans() {
+
+    const {
+        data: { user }
+    } = await supabaseClient.auth.getUser();
+
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    const { data: plans, error } =
+        await supabaseClient
+            .from("investment_plans")
+            .select("*")
+            .order("min_amount", { ascending: true });
+
+    const container =
+        document.getElementById("plansContainer");
+
+    if (error) {
+    container.innerHTML =
+        `<p>Error: ${error.message}</p>`;
+
+    console.error("Supabase error:", error);
+    return;
+}
+
+    container.innerHTML = "";
+
+    plans.forEach(plan => {
+
+        const card = document.createElement("div");
+
+        card.className = "card";
+
+        card.innerHTML = `
+            <h3>${plan.name}</h3>
+
+            <p>${plan.description || ""}</p>
+
+            <p>
+                <strong>Minimum:</strong>
+                ₦${Number(plan.min_amount).toLocaleString("en-NG")}
+            </p>
+
+            <p>
+                <strong>Duration:</strong>
+                ${plan.duration_days} days
+            </p>
+
+            <p>
+                <strong>Demo return rate:</strong>
+                ${plan.return_rate}%
+            </p>
+
+            <button class="auth-btn" type="button"
+                onclick="selectPlan(${plan.id})">
+                Select Plan
+            </button>
+        `;
+
+        container.appendChild(card);
+    });
+}
+
+
+async function selectPlan(planId) {
+
+    const {
+        data: { user },
+        error: userError
+    } = await supabaseClient.auth.getUser();
+
+    if (userError || !user) {
+        alert("Please login first.");
+        window.location.href = "login.html";
+        return;
+    }
+
+    const {
+        data: plan,
+        error: planError
+    } = await supabaseClient
+        .from("investment_plans")
+        .select(`
+            id,
+            name,
+            min_amount,
+            duration_days,
+            return_rate
+        `)
+        .eq("id", planId)
+        .single();
+
+    if (planError || !plan) {
+        alert("Unable to find this demo plan.");
+        console.error(planError);
+        return;
+    }
+
+    const amount = prompt(
+        `Enter your demo investment amount for ${plan.name}:\n\n` +
+        `Minimum: ₦${Number(plan.min_amount).toLocaleString("en-NG")}`
+    );
+
+    if (amount === null) {
+        return;
+    }
+
+    const investmentAmount = Number(amount);
+
+    if (
+        !Number.isFinite(investmentAmount) ||
+        investmentAmount <= 0
+    ) {
+        alert("Please enter a valid amount.");
+        return;
+    }
+
+    if (investmentAmount < Number(plan.min_amount)) {
+        alert(
+            `The minimum amount for ${plan.name} is ₦${Number(
+                plan.min_amount
+            ).toLocaleString("en-NG")}.`
+        );
+        return;
+    }
+
+
+    // =========================
+    // CREATE DEMO INVESTMENT
+    // =========================
+
+    const {
+        data: investmentResult,
+        error: investmentError
+    } = await supabaseClient.rpc(
+        "create_demo_investment",
+        {
+            p_plan_id: plan.id,
+            p_amount: investmentAmount
+        }
+    );
+
+    if (investmentError) {
+
+        console.error(
+            "Demo investment error:",
+            investmentError
+        );
+
+        alert(
+            "Unable to create demo investment."
+        );
+
+        return;
+    }
+
+    if (
+        !investmentResult ||
+        !investmentResult.success
+    ) {
+
+        alert(
+            investmentResult?.message ||
+            "Unable to create demo investment."
+        );
+
+        return;
+    }
+
+
+    // =========================
+    // COMPLETE DEMO REFERRAL
+    // =========================
+
+    const {
+        error: referralBonusError
+    } = await supabaseClient.rpc(
+        "complete_demo_referral",
+        {
+            p_investment_amount: investmentAmount
+        }
+    );
+
+    if (referralBonusError) {
+
+        console.error(
+            "Demo referral bonus error:",
+            referralBonusError
+        );
+    }
+
+
+    // =========================
+    // SUCCESS
+    // =========================
+
+    alert(
+        `Demo investment created successfully!\n\n` +
+        `Plan: ${plan.name}\n` +
+        `Amount: ₦${investmentAmount.toLocaleString("en-NG", {
+            minimumFractionDigits: 2
+        })}`
+    );
+
+
+    // =========================
+    // GO TO DASHBOARD
+    // =========================
+
+    window.location.replace("dashboard.html");
+  }
+
+loadPlans();
+</script>
+
+</body>
+</html>
