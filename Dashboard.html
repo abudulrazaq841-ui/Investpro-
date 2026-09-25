@@ -1,269 +1,690 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><script src="https://js.paystack.co/v1/inline.js"></script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - InvestPro</title>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
-    body{background:#030712;color:#E5E7EB;min-height:100vh}
 
-    .header{display:flex;justify-content:space-between;align-items:center;padding:20px 30px;background:#111827;border-bottom:1px solid #1F2937}
-    .header h2{font-size:20px}
-    .header button{padding:8px 16px;background:#EF4444;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    .container{padding:30px;max-width:1100px;margin:0 auto}
+    <title>Dashboard - InvestPro</title>
 
-    /* TOP CARDS */
-    .top-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-bottom:30px}
-    .card{background:#111827;border:1px solid #1F2937;padding:20px;border-radius:16px}
-    .card p{color:#9CA3AF;font-size:13px}
-    .card h1{font-size:28px;margin:10px 0}
-    .card .sub{color:#4ADE80;font-size:12px}
-
-    /* ACTION BUTTONS */
-    .actions{display:flex;gap:15px;margin-bottom:30px}
-    .btn{padding:12px 20px;border:none;border-radius:10px;font-weight:700;cursor:pointer}
-    .btn-deposit{background:#22C55E;color:white}
-    .btn-withdraw{background:#3B82F6;color:white}
-    .btn-invite{background:#8B5CF6;color:white}
-
-    /* PLANS */
-    .section-title{font-size:20px;margin-bottom:15px;font-weight:700}
-    .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
-    .plan{background:#111827;border:1px solid #1F2937;padding:25px;border-radius:16px;transition:0.3s}
-    .plan:hover{border-color:#8B5CF6}
-    .plan .tag{display:inline-block;background:#8B5CF6;padding:4px 10px;border-radius:20px;font-size:11px;margin-bottom:10px}
-    .plan h3{font-size:18px}
-    .plan .roi{font-size:32px;font-weight:800;color:#22C55E;margin:10px 0}
-    .plan .detail{display:flex;justify-content:space-between;color:#9CA3AF;font-size:14px;margin:5px 0}
-    .btn-invest{width:100%;padding:12px;background:linear-gradient(90deg,#22C55E,#3B82F6);color:white;border:none;border-radius:10px;font-weight:800;margin-top:15px;cursor:pointer}
-
-    /* MODAL */
-    .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);justify-content:center;align-items:center;z-index:100}
-    .modal-content{background:#111827;padding:30px;border-radius:16px;width:90%;max-width:420px;border:1px solid #1F2937}
-    .modal-content h2{margin-bottom:15px}
-    .modal-content input{width:100%;padding:14px;margin:15px 0;border-radius:10px;border:1px solid #374151;background:#030712;color:white}
-    .modal-content .btn{width:100%}
-    
-    .ref-box{background:#1F2937;padding:15px;border-radius:10px;margin-top:15px}
-    .ref-box input{width:100%;background:#030712;border:1px solid #374151;color:#8B5CF6;padding:10px;border-radius:8px}
-  </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
-  <script type="module">
-  import { requireAuth, getProfile, logout } from './assets/js/supabase.js'
+
+<header>
+    <div class="logo">InvestPro</div>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="plans.html">Plans</a>
+        <a href="#" id="logoutBtn">Logout</a>
+    </nav>
+</header>
+
+
+<main class="dashboard-page">
+
+    <!-- Welcome -->
+    <section class="dashboard-welcome">
+
+        <div class="welcome-icon">
+            👤
+        </div>
+
+        <div>
+            <span>YOUR DASHBOARD</span>
+
+            <h1 id="welcomeMessage">
+                Welcome!
+            </h1>
+
+            <p>
+                Track your demo investment portfolio and progress.
+            </p>
+        </div>
+
+        <div class="welcome-chart">
+            📈
+        </div>
+
+    </section>
+
+
+    <!-- Balance -->
+   <section class="balance-card">
+
+    <div>
+        <span>DEMO PORTFOLIO BALANCE</span>
+
+        <h2 id="balance">
+            ₦0.00
+        </h2>
+
+        <p class="balance-note">
+            This balance is for demonstration purposes only.
+        </p>
+    </div>
+
+    <div class="balance-icon">
+        💰
+    </div>
+
+</section>
+
+
+    <!-- Summary -->
+    <section class="dashboard-summary">
+
+        <div class="dashboard-stat">
+
+            <div class="stat-icon">
+                📊
+            </div>
+
+            <div>
+                <span>Total Invested</span>
+
+                <strong id="totalInvested">
+                    ₦0.00
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="dashboard-stat">
+
+            <div class="stat-icon">
+                📁
+            </div>
+
+            <div>
+                <span>Active Investments</span>
+
+                <strong id="activeInvestments">
+                    0
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="dashboard-stat">
+
+            <div class="stat-icon">
+                📈
+            </div>
+
+            <div>
+                <span>Demo Returns</span>
+
+                <strong id="demoReturns">
+                    ₦0.00
+                </strong>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Investments -->
+  <!-- =========================
+     REFERRAL PROGRAM
+========================= -->
+
+    <div class="section-heading">
+        <div>
+            <p class="referral-label">🎁 INVITE & EARN</p>
+            <h2>Referral Program</h2>
+            <p>
+                Invite friends to your InvestPro demo platform
+                and earn demo referral bonuses.
+            </p>
+        </div>
+    </div>
+
+
+    <div class="referral-card">
+
+        <!-- Referral Header -->
+        <div class="referral-card-header">
+
+            <div class="referral-icon">
+                🎁
+            </div>
+
+            <div>
+                <h3>Share InvestPro</h3>
+                <p>
+                    Invite friends using your personal
+                    referral link.
+                </p>
+            </div>
+
+        </div>
+
+
+        <!-- Referral Code -->
+        <div class="referral-code-box">
+
+            <span>Your Referral Code</span>
+
+            <strong id="referralCode">
+                Loading...
+            </strong>
+
+        </div>
+
+
+        <!-- Referral Link -->
+        <div class="referral-link-box">
+
+            <label for="referralLink">
+                Your Referral Link
+            </label>
+
+            <div class="referral-link-row">
+
+                <input
+                    type="text"
+                    id="referralLink"
+                    readonly
+                    value="Loading..."
+                >
+
+                <button
+                    id="copyReferralBtn"
+                    class="auth-btn referral-copy-btn"
+                    type="button">
+                    📋 Copy
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- Referral Statistics -->
+        <div class="referral-stats">
+
+            <div class="referral-stat">
+
+                <div class="referral-stat-icon">
+                    👥
+                </div>
+
+                <div>
+                    <span>People Referred</span>
+
+                    <strong id="referralCount">
+                        0
+                    </strong>
+                </div>
+
+            </div>
+
+
+            <div class="referral-stat">
+
+                <div class="referral-stat-icon">
+                    🎁
+                </div>
+
+                <div>
+                    <span>Demo Bonuses Earned</span>
+
+                    <strong id="referralBonus">
+                        ₦0.00
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+      
+
+            <div class="bonus-icon">
+                🎉
+            </div>
+
+            <div class="bonus-content">
+
+                <strong>
+                    ₦500 Demo Referral Bonus
+                </strong>
+
+                <p>
+                    Earn a demo bonus when a person you
+                    referred completes a qualifying demo
+                    investment.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- How It Works -->
+        <div class="referral-how">
+
+            <h3>How It Works</h3>
+
+            <div class="referral-steps">
+
+                <div class="referral-step">
+
+                    <div class="step-number">
+                        1
+                    </div>
+
+                    <div>
+                        <strong>Share your link</strong>
+                        <p>
+                            Copy and send your referral
+                            link to a friend.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="referral-step">
+
+                    <div class="step-number">
+                        2
+                    </div>
+
+                    <div>
+                        <strong>Friend signs up</strong>
+                        <p>
+                            Your friend creates a demo
+                            InvestPro account through your link.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="referral-step">
+
+                    <div class="step-number">
+                        3
+                    </div>
+
+                    <div>
+                        <strong>Demo bonus</strong>
+                        <p>
+                            A qualifying demo investment
+                            completes the referral.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    <!-- =========================
+     DEMO DEPOSIT
+========================= -->
+
+<section class="demo-deposit-section">
+
+    <div class="section-heading">
+        <div>
+            <h2>💰 Demo Deposit</h2>
+            <p>
+                Add simulated funds to your InvestPro demo balance.
+            </p>
+        </div>
+    </div>
+
+    <div class="demo-deposit-card">
+
+        <div class="demo-warning">
+            ⚠️ <strong>Demo Only</strong>
+            <span>
+                No real money or payment is involved.
+            </span>
+        </div>
+
+        <form id="depositForm">
+
+            <div class="form-group">
+
+                <label for="depositAmount">
+                    Deposit Amount
+                </label>
+
+                <input
+                    type="number"
+                    id="depositAmount"
+                    min="1"
+                    step="0.01"
+                    placeholder="Enter demo amount"
+                    required
+                >
+
+            </div>
+
+            <button
+                type="submit"
+                class="auth-btn"
+                id="depositBtn">
+
+                💰 Request Demo Deposit
+
+            </button>
+
+            <p
+                id="depositMessage"
+                class="form-message">
+            </p>
+
+        </form>
+
+    </div>
+
+</section>
+  <!-- =========================
+     DEMO DEPOSIT HISTORY
+========================= -->
+
+<section class="deposit-history-section">
+
+    <div class="section-heading">
+        <div>
+            <h2>📋 Demo Deposit History</h2>
+            <p>
+                Track your simulated deposit requests.
+            </p>
+        </div>
+    </div>
+
+    <div
+        id="depositHistory"
+        class="deposit-history">
+
+        <p>Loading deposits...</p>
+
+    </div>
+
+</section>
+  <!-- =========================
+     DEMO WITHDRAWAL
+========================= -->
+
+<section class="demo-withdrawal-section">
+
+    <div class="section-heading">
+        <div>
+            <h2>💸 Demo Withdrawal</h2>
+            <p>Simulate a withdrawal from your InvestPro demo balance.</p>
+        </div>
+    </div>
+
+    <div class="demo-withdrawal-card">
+
+        <div class="demo-warning">
+            ⚠️ <strong>Demo Only</strong>
+            <span>
+                No real money will be transferred.
+            </span>
+        </div>
+
+        <form id="withdrawalForm">
+
+            <div class="withdrawal-balance">
+                <span>Available Demo Balance</span>
+
+                <strong id="withdrawalBalance">
+                    ₦0.00
+                </strong>
+            </div>
+
+            <div class="form-group">
+
+                <label for="withdrawalAmount">
+                    Withdrawal Amount
+                </label>
+
+                <input
+                    type="number"
+                    id="withdrawalAmount"
+                    min="200"
+                    step="0.01"
+                    placeholder="Minimum ₦2,000"
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="withdrawalBank">
+                    Bank
+                </label>
+
+                <select id="withdrawalBank" required>
+
+                    <option value="">
+                        Select bank
+                    </option>
+
+                    <option value="Access Bank">
+                        Access Bank
+                    </option>
+
+                    <option value="First Bank">
+                        First Bank
+                    </option>
+
+                    <option value="GTBank">
+                        GTBank
+                    </option>
+
+                    <option value="Kuda">
+                        Kuda
+                    </option>
+
+                    <option value="Moniepoint">
+                        Moniepoint
+                    </option>
+
+                    <option value="OPay">
+                        OPay
+                    </option>
+
+                    <option value="UBA">
+                        UBA
+                    </option>
+
+                    <option value="Zenith Bank">
+                        Zenith Bank
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="withdrawalAccountName">
+                    Account Name
+                </label>
+
+                <input
+                    type="text"
+                    id="withdrawalAccountName"
+                    placeholder="Enter account name"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="withdrawalAccountNumber">
+                    Account Number
+                </label>
+
+                <input
+                    type="text"
+                    id="withdrawalAccountNumber"
+                    inputmode="numeric"
+                    maxlength="10"
+                    placeholder="Enter account number"
+                    required
+                >
+
+            </div>
+
+            <button
+                type="submit"
+                class="auth-btn"
+                id="withdrawalBtn">
+
+                💸 Request Demo Withdrawal
+
+            </button>
+
+            <p
+                id="withdrawalMessage"
+                class="form-message">
+            </p>
+
+        </form>
+
+    </div>
+
+</section>
+  <!-- =========================
+     DEMO WITHDRAWAL HISTORY
+========================= -->
+
+<section class="withdrawal-history-section">
+
+    <div class="section-heading">
+        <div>
+            <h2>📋 Demo Withdrawal History</h2>
+            <p>Track your simulated withdrawal requests.</p>
+        </div>
+    </div>
+
+    <div
+        id="withdrawalHistory"
+        class="withdrawal-history">
+
+        <p>Loading withdrawals...</p>
+
+    </div>
+
+</section>
   
-  // THIS LINE RUNS FIRST. If not logged in = redirect to login.html
-  const currentUser = await requireAuth() 
-  
-  // ... rest of your dashboard code
-</script>
+    <section class="my-investments">
+
+        <div class="section-heading">
+
+            <div>
+                <h2>📊 My Investments</h2>
+
+                <p>
+                    Track your active demo investments and progress.
+                </p>
+            </div>
+
+            <a href="plans.html" class="dashboard-add-btn">
+                + Explore Plans
+            </a>
+
+        </div>
+
+
+        <div id="investmentsContainer" class="investment-list">
+
+            <p>
+                Loading investments...
+            </p>
+
+        </div>
+
+    </section>
+
+</main>
+<!-- Investment Details Modal -->
+<div id="investmentModal" class="investment-modal">
+
+    <div class="investment-modal-content">
+
+        <button
+            id="closeInvestmentModal"
+            class="investment-modal-close"
+            type="button">
+            ×
+        </button>
+
+        <h2 id="modalPlanName">Investment Details</h2>
+
+        <p id="modalDescription">
+            Demo investment information
+        </p>
+
+        <div class="modal-details">
+
+            <div>
+                <span>Amount</span>
+                <strong id="modalAmount">₦0.00</strong>
+            </div>
+
+            <div>
+                <span>Duration</span>
+                <strong id="modalDuration">0 days</strong>
+            </div>
+
+            <div>
+                <span>Demo Return Rate</span>
+                <strong id="modalReturnRate">0%</strong>
+            </div>
+
+            <div>
+                <span>Estimated Demo Return</span>
+                <strong id="modalDemoReturn">₦0.00</strong>
+            </div>
+
+            <div>
+                <span>Status</span>
+                <strong id="modalStatus">active</strong>
+            </div>
+
+            <div>
+                <span>Started</span>
+                <strong id="modalDate">--</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<footer>
+
+    <p>
+        © 2026 InvestPro. Demo platform for educational purposes.
+    </p>
+
+</footer>
+
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script type="module">
-  import { requireAuth, getProfile, logout } from './assets/js/supabase.js'
-  const SUPABASE_URL = 'https://oatkpqfhaqnqlpgmuoxe.supabase.co'
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hdGtwcWZoYXFucWxwZ211b3hlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxNDI4MzAsImV4cCI6MjEwMzcxODgzMH0.qirRtKQdQPjQjeeohBU0mf-bB61nK0tNmQ6sEjHon_M'
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-
-  let currentUser;
-  let userProfile;
-  let txType = '';
-
-  // INIT
-  async function init(){
-    currentUser = await requireAuth()
-    await loadUser()
-  }
-  init()
-
-  async function loadUser(){
-    const { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single()
-    userProfile = data
-    document.getElementById('balance').innerText = data.balance.toLocaleString()
-    document.getElementById('earned').innerText = data.total_earned.toLocaleString()
-    
-    // referral count
-    const { count } = await supabase.from('profiles').select('*', {count: 'exact'}).eq('referred_by', currentUser.id)
-    document.getElementById('refs').innerText = count
-    document.getElementById('refLink').value = `https://yourapp.netlify.app/signup.html?ref=${data.referral_code}`
-  }
-
-  // MODALS
-  window.openModal = (type) => {
-    txType = type
-    document.getElementById('modalTitle').innerText = type === 'deposit' ? 'Deposit Funds' : 'Withdraw Funds'
-    document.getElementById('modalBtn').innerText = type === 'deposit' ? 'Request Deposit' : 'Request Withdrawal'
-    document.getElementById('modal').style.display = 'flex'
-  }
-  window.closeModal = () => document.getElementById('modal').style.display = 'none'
-  
-  window.openInvite = () => document.getElementById('inviteModal').style.display = 'flex'
-  window.closeInvite = () => document.getElementById('inviteModal').style.display = 'none'
-
-  // DEPOSIT / WITHDRAW
-  window.startDeposit = async (amount) => {
-  const user = await requireAuth()
-  const profile = await getProfile()
-
-  let handler = PaystackPop.setup({
-    key: 'pk_test_YOUR_PUBLIC_KEY', // Get from paystack.com
-    email: profile.email,
-    amount: amount * 100, // Paystack is in kobo
-    currency: "NGN",
-    ref: 'INV'+Math.floor((Math.random() * 1000000) + 1),
-    metadata: { user_id: user.id },
-    callback: function(response){
-      verifyPayment(response.reference, amount, user.id)
-    },
-    onClose: function(){ alert('Payment cancelled') }
-  });
-  handler.openIframe();
-}
-
-async function verifyPayment(reference, amount, userId){
-  // Call your backend to verify. For now we trust and credit
-  const { data: profile } = await supabase.from('profiles').select('balance').eq('id', userId).single()
-  await supabase.from('profiles').update({balance: profile.balance + amount}).eq('id', userId)
-  await supabase.from('transactions').insert([{user_id: userId, type:'deposit', amount, status:'approved', reference}])
-  alert('Deposit successful! ₦'+amount)
-  loadUser()
-}
-
-  // INVEST
-// INVEST - ONLY ALLOWS LOGGED IN USERS
-window.invest = async (amount, roi, days) => {
-  // STEP 1: GUARD - KICK OUT IF NOT LOGGED IN
-  const user = await requireAuth()
-  if(!user) return // stops here if not logged in
-  
-  // STEP 2: GET LATEST PROFILE
-  const profile = await getProfile()
-  if(!profile) return
-
-  // STEP 3: CHECK BALANCE
-  if(profile.balance < amount) {
-    alert('Insufficient Balance. Please deposit first.')
-    openModal('deposit') // open deposit modal
-    return
-  }
-
-  // STEP 4: DEDUCT AND SAVE INVESTMENT
-  const newBalance = profile.balance - amount
-  await supabase.from('profiles').update({balance: newBalance}).eq('id', user.id)
-  
-  await supabase.from('investments').insert([{
-    user_id: user.id,
-    amount: amount, 
-    roi: roi, 
-    days: days,
-    start_date: new Date(),
-    end_date: new Date(Date.now() + days * 24 * 60 * 60 * 1000),
-    status: 'active'
-  }])
-
-  alert(`Success! You invested ₦${amount.toLocaleString()}. You will earn ${roi}% daily for ${days} days`)
-  loadUser() // refresh balance
-}
-
-  // COPY REF
-  window.copyRef = () => {
-    navigator.clipboard.writeText(document.getElementById('refLink').value)
-    alert('Referral link copied!')
-  }
-
-  window.logoutBtn = logout
-</script>
-
-<div class="header">
-  <h2>InvestPro Dashboard</h2>
-  <button onclick="logoutBtn()">Logout</button>
-</div>
-
-<div class="container">
-  <!-- STATS -->
-  <div class="top-grid">
-    <div class="card">
-      <p>Account Balance</p>
-      <h1>₦<span id="balance">0</span></h1>
-      <p class="sub">Available to invest</p>
-    </div>
-    <div class="card">
-      <p>Total Earned</p>
-      <h1>₦<span id="earned">0</span></h1>
-      <p class="sub">From investments + referrals</p>
-    </div>
-    <div class="card">
-      <p>Total Referrals</p>
-      <h1><span id="refs">0</span></h1>
-      <p class="sub">Earn 10% of their first deposit</p>
-    </div>
-  </div>
-
-  <!-- ACTIONS -->
-  <div class="actions">
-    <button class="btn btn-deposit" onclick="openModal('deposit')">+ Deposit</button>
-    <button class="btn btn-withdraw" onclick="openModal('withdraw')">- Withdraw</button>
-    <button class="btn btn-invite" onclick="openInvite()">👥 Invite Friends</button>
-  </div>
-
-  <!-- INVESTMENT PLANS -->
-  <h2 class="section-title">Investment Plans</h2>
-  <div class="plans">
-    <div class="plan">
-      <span class="tag">POPULAR</span>
-      <h3>Starter Plan</h3>
-      <div class="detail"><span>Minimum</span><span>₦10,000</span></div>
-      <div class="detail"><span>Duration</span><span>7 Days</span></div>
-      <div class="roi">5% Daily</div>
-      <button class="btn-invest" onclick="invest(10000, 5, 7)">Invest Now</button>
-    </div>
-
-    <div class="plan">
-      <span class="tag" style="background:#3B82F6">PRO</span>
-      <h3>Pro Plan</h3>
-      <div class="detail"><span>Minimum</span><span>₦50,000</span></div>
-      <div class="detail"><span>Duration</span><span>14 Days</span></div>
-      <div class="roi">10% Daily</div>
-      <button class="btn-invest" onclick="invest(50000, 10, 14)">Invest Now</button>
-    </div>
-
-    <div class="plan">
-      <span class="tag" style="background:#EF4444">VIP</span>
-      <h3>VIP Plan</h3>
-      <div class="detail"><span>Minimum</span><span>₦200,000</span></div>
-      <div class="detail"><span>Duration</span><span>30 Days</span></div>
-      <div class="roi">20% Daily</div>
-      <button class="btn-invest" onclick="invest(200000, 20, 30)">Invest Now</button>
-    </div>
-  </div>
-</div>
-
-<!-- DEPOSIT/WITHDRAW MODAL -->
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <h2 id="modalTitle">Deposit</h2>
-    <p style="color:#9CA3AF">Enter amount in Naira</p>
-    <input type="number" id="amount" placeholder="₦ 10,000">
-    <button class="btn btn-deposit" onclick="startDeposit(parseFloat(document.getElementById('amount').value))">Pay with Paystack</button>
-    <button class="btn" style="background:#374151;margin-top:10px" onclick="closeModal()">Cancel</button>
-  </div>
-</div>
-
-<!-- INVITE MODAL -->
-<div class="modal" id="inviteModal">
-  <div class="modal-content">
-    <h2>Invite & Earn</h2>
-    <p style="color:#9CA3AF">Share your link. You get 10% of your friend's first deposit.</p>
-    <div class="ref-box">
-      <p style="margin-bottom:8px">Your Referral Link:</p>
-      <input type="text" id="refLink" readonly>
-    </div>
-    <button class="btn btn-invite" onclick="copyRef()" style="margin-top:15px">Copy Link</button>
-    <button class="btn" style="background:#374151;margin-top:10px" onclick="closeInvite()">Close</button>
-  </div>
-</div>
+<script src="js/supabase.js"></script>
+<script src="js/dashboard.js"></script>
 
 </body>
 </html>
