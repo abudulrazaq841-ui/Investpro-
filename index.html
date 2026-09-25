@@ -1,91 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>InvestPro - Grow Your Money</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-    body { background: #0F172A; color: white; }
-
-   
-    /* NAVBAR */
-    
-    nav { display: flex; justify-content: space-between; padding: 30px 10%; background: rgba(15,23,42,0.8); position: fixed; width: 100%; backdrop-filter: blur(10px); }
-    nav .logo { font-size: 24px; font-weight: 800; color: #2563EB; }
-    nav .btns a { padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-left: 10px; }
-    .btn-login { color: white; border: 1px solid white; }
-    .btn-signup { background: #2563EB; color: white; }
-   .btn-dashboard { background: #2563EB; color: white; }
-
-    /* HERO */
-    .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 10%; background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%); }
-    .hero h1 { font-size: 3rem; margin-bottom: 20px; }
-    .hero p { font-size: 1.2rem; color: #94A3B8; margin-bottom: 30px; max-width: 600px; margin-inline: auto; }
-    .cta { background: #16A34A; color: white; padding: 15px 35px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 1.1rem; }
-    .cta:hover { background: #15803D; }
-
-    /* FEATURES */
-    .features { padding: 80px 10%; background: #F8FAFC; color: #0F172A; text-align: center; }
-    .features h2 { font-size: 2.5rem; margin-bottom: 50px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
-    .card { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-    .card h3 { color: #2563EB; margin-bottom: 10px; }
-
-    /* FOOTER */
-    footer { text-align: center; padding: 30px; background: #0F172A; color: #94A3B8; }
-
-    @media(max-width: 768px){
-      .hero h1 { font-size: 2rem; }
-      nav { padding: 20px 5%; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InvestPro | Smart Investment Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-  <!-- NAVBAR -->
- <nav style="display:flex; gap:20px;">
-    <div class="logo">InvestPro</div>
-    <div class="btns">
-      <a href="dashboard.html" class="btn-dashboard">dashboard</a>
-    </div>
+<header id="navbar">
+  <div class="logo"><span>Invest</span>Pro</div>
+  <nav id="mainNav">
+    <a href="index.html" class="active">Home</a>
+    <a href="login.html">Login</a>
+    <a href="signup.html" class="btn-small">Sign Up</a>
   </nav>
+</header>
 
-  <!-- HERO SECTION -->
-  <section class="hero">
-    <div>
-      <h1>Grow Your Money With Confidence</h1>
-      <p>Start investing with just ₦3,000. Track deposits, withdrawals and earnings all in one dashboard. Secure, fast, and transparent.</p>
- <nav style="display:flex; gap:20px;">
-      <a href="signup.html" class="cta">signup to Get Started Free</a>
-      <a href="referral.html" class="cta"
-    >invite and earn a rewarde</a>
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content reveal">
+    <p class="hero-label">📊 DEMO INVESTMENT PLATFORM</p>
+    <h1>Grow Your Future<br><span>With InvestPro</span></h1>
+    <p class="hero-desc">Explore investment plans, track your demo portfolio, and monitor your progress from one simple dashboard. Secure, fast, and built with Supabase.</p>
+    <div class="hero-buttons">
+      <a href="signup.html" class="auth-btn">Get Started — Free</a>
+      <a href="login.html" class="secondary-btn">Login</a>
     </div>
-  </section>
-
-  <!-- FEATURES SECTION -->
-  <section class="features">
-    <h2>Why Choose InvestPro</h2>
-    <div class="grid">
-      <div class="card">
-        <h3>₦500 Welcome Bonus</h3>
-        <p>Every new user gets ₦500 to start investing immediately.</p>
-      </div>
-      <div class="card">
-        <h3>Fast Deposits</h3>
-        <p>Fund your account in minutes. Admin approval in under 1 minutes.</p>
-      </div>
-      <div class="card">
-        <h3>Secure Platform</h3>
-        <p>Powered by Supabase. Your data and money are protected.</p>
-      </div>
+    <div class="trust-row">
+      <div><b id="count1">0</b><span>k+ Users</span></div>
+      <div><b>$128M+</b><span>Managed</span></div>
+      <div><b>99.9%</b><span>Uptime</span></div>
     </div>
-  </section>
+  </div>
+  <div class="hero-card reveal">
+    <div class="card-header">
+      <p>MY PORTFOLIO</p>
+      <span class="live">● Live</span>
+    </div>
+    <h2>$12,430.50</h2>
+    <p class="profit">+ $342.20 today</p>
+    <div class="mini-chart">
+      <svg viewBox="0 0 100 30"><path d="M0 25 L15 20 L30 22 L45 12 L60 14 L75 6 L100 2" fill="none" stroke="#5ee9a0" stroke-width="2.5" stroke-linecap="round"/></svg>
+    </div>
+    <div class="card-stats">
+      <div><small>Plans</small><b>3 Active</b></div>
+      <div><small>Return</small><b>8.2% APY</b></div>
+    </div>
+  </div>
+</section>
 
-  <!-- FOOTER -->
-  <footer>
-    © 2026 InvestPro. All rights reserved.
-  </footer>
+<section class="features">
+  <h2 class="reveal">Why Choose InvestPro?</h2>
+  <p class="section-text reveal">Everything you need to explore and manage your demo investment portfolio.</p>
+  <div class="cards">
+    <div class="card reveal"><div class="feature-icon">📊</div><h3>Track Investments</h3><p>View your demo investments and monitor their status from your dashboard in real-time.</p></div>
+    <div class="card reveal"><div class="feature-icon">📈</div><h3>Investment Plans</h3><p>Explore different demo plans and compare their duration and return rates instantly.</p></div>
+    <div class="card reveal"><div class="feature-icon">🔐</div><h3>Secure Account</h3><p>Your account is protected with Supabase auth, RLS policies and encrypted sessions.</p></div>
+  </div>
+</section>
 
+<section class="features alt">
+  <h2 class="reveal">How It Works</h2>
+  <div class="cards steps">
+    <div class="card step reveal"><span class="num">01</span><h3>Create Account</h3><p>Create your free demo account in 30 seconds.</p></div>
+    <div class="card step reveal"><span class="num">02</span><h3>Choose Plan</h3><p>Explore the available demo investment plans.</p></div>
+    <div class="card step reveal"><span class="num">03</span><h3>Track Growth</h3><p>Select a plan and track your demo investment from your dashboard.</p></div>
+  </div>
+</section>
+
+<section class="cta reveal">
+  <h2>Ready to Explore InvestPro?</h2>
+  <p>Create your demo account and start exploring the platform today.</p>
+  <a href="signup.html" class="auth-btn">Create Demo Account</a>
+</section>
+
+<footer>
+  <p>© 2026 InvestPro. Demo platform for educational purposes.</p>
+</footer>
+
+<script>
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('show')})},{threshold:0.15});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+let c=0, t=document.getElementById('count1');
+let iv=setInterval(()=>{c+=1; if(c>=24){c=24;clearInterval(iv)} t.innerText=c;},40);
+window.addEventListener('scroll',()=>{document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>20)});
+</script>
 </body>
 </html>
