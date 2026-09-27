@@ -882,4 +882,371 @@ async function loadAdminWithdrawals() {
                 </p>
 
                 <p>
-                    <span>💳 Account Number</s
+                    <span>📅 Date</span>
+                    <strong>
+                        ${date}
+                    </strong>
+                </p>
+
+            </div>
+
+            <div class="admin-withdrawal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    onclick="
+                        updateWithdrawalStatus(
+                            ${withdrawal.id},
+                            'processing'
+                        )
+                    ">
+                    ⚙️ Processing
+                </button>
+
+                <button
+                    type="button"
+                    class="auth-btn"
+                    onclick="
+                        updateWithdrawalStatus(
+                            ${withdrawal.id},
+                            'completed'
+                        )
+                    ">
+                    ✅ Complete
+                </button>
+
+                <button
+                    type="button"
+                    class="danger-btn"
+                    onclick="
+                        updateWithdrawalStatus(
+                            ${withdrawal.id},
+                            'cancelled'
+                        )
+                    ">
+                    ❌ Cancel
+                </button>
+
+            </div>
+        `;
+
+        container.appendChild(card);
+    });
+}
+// =========================
+// UPDATE WITHDRAWAL STATUS
+// =========================
+
+async function updateWithdrawalStatus(
+    withdrawalId,
+    newStatus
+) {
+
+    const confirmed =
+        confirm(
+            `Change withdrawal #${withdrawalId} to "${newStatus}"?`
+        );
+
+    if (!confirmed) return;
+
+    const {
+        data,
+        error
+    } = await supabaseClient.rpc(
+        "update_demo_withdrawal_status",
+        {
+            p_withdrawal_id: withdrawalId,
+            p_status: newStatus
+        }
+    );
+
+    if (error) {
+
+        console.error(
+            "Status update error:",
+            error
+        );
+
+        alert(
+            "Unable to update withdrawal status."
+        );
+
+        return;
+    }
+
+    if (!data || !data.success) {
+
+        alert(
+            data?.message ||
+            "Status update failed."
+        );
+
+        return;
+    }
+
+    await loadAdminWithdrawals();
+            }
+// =========================
+// LOAD WITHDRAWALS
+// =========================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        loadAdminWithdrawals();
+
+        const refreshButton =
+            document.getElementById(
+                "refreshWithdrawalsBtn"
+            );
+
+        if (refreshButton) {
+
+            refreshButton.addEventListener(
+                "click",
+                loadAdminWithdrawals
+            );
+        }
+    }
+);
+// =========================
+// DEMO DEPOSITS
+// =========================
+
+async function loadAdminDeposits() {
+
+    const container =
+        document.getElementById("adminDeposits");
+
+    if (!container) return;
+
+    container.innerHTML =
+        "<p>Loading deposits...</p>";
+
+    const {
+        data: deposits,
+        error
+    } = await supabaseClient
+        .from("demo_deposits")
+        .select(`
+            id,
+            user_id,
+            amount,
+            status,
+            created_at,
+            approved_at
+        `)
+        .order("created_at", {
+            ascending: false
+        });
+
+    if (error) {
+
+        console.error(
+            "Admin deposits error:",
+            error
+        );
+
+        container.innerHTML =
+            "<p>Unable to load deposits.</p>";
+
+        return;
+    }
+
+    if (!deposits || deposits.length === 0) {
+
+        container.innerHTML =
+            "<p>No demo deposits yet.</p>";
+
+        return;
+    }
+
+    container.innerHTML = "";
+
+    deposits.forEach(deposit => {
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "admin-deposit-card";
+
+        const amount =
+            Number(deposit.amount || 0)
+                .toLocaleString("en-NG", {
+                    minimumFractionDigits: 2
+                });
+        const date =
+            new Date(
+                deposit.created_at
+            ).toLocaleString("en-NG");
+
+        const status =
+            deposit.status || "pending";
+
+        const statusLabel =
+            status.charAt(0).toUpperCase() +
+            status.slice(1);
+
+        card.innerHTML = `
+
+            <div class="admin-deposit-header">
+
+                <div>
+
+                    <span>
+                        Deposit #${deposit.id}
+                    </span>
+
+                    <strong>
+                        ₦${amount}
+                    </strong>
+
+                </div>
+
+                <span class="
+                    deposit-status
+                    ${status}
+                ">
+                    ${statusLabel}
+                </span>
+
+            </div>
+
+            <div class="admin-deposit-details">
+
+                <p>
+                    <span>👤 User ID</span>
+                    <strong>
+                        ${deposit.user_id}
+                    </strong>
+                </p>
+
+                <p>
+                    <span>📅 Requested</span>
+                    <strong>
+                        ${date}
+                    </strong>
+                </p>
+
+            </div>
+
+            ${
+                status === "pending"
+                    ? `
+                    <div class="admin-deposit-actions">
+
+                            <button
+                                type="button"
+                                class="auth-btn"
+                                onclick="
+                                    updateDepositStatus(
+                                        ${deposit.id},
+                                        'approved'
+                                    )
+                                ">
+                                ✅ Approve
+                            </button>
+
+                            <button
+                                type="button"
+                                class="danger-btn"
+                                onclick="
+                                    updateDepositStatus(
+                                        ${deposit.id},
+                                        'cancelled'
+                                    )
+                                ">
+                                ❌ Cancel
+                            </button>
+
+                        </div>
+                    `
+                    : ""
+            }
+
+        `;
+
+        container.appendChild(card);
+    });
+                     }
+                         // =========================
+// UPDATE DEPOSIT STATUS
+// =========================
+
+async function updateDepositStatus(
+    depositId,
+    newStatus
+) {
+
+    const confirmed =
+        confirm(
+            `Change deposit #${depositId} to "${newStatus}"?`
+        );
+
+    if (!confirmed) return;
+
+    const {
+        data,
+        error
+    } = await supabaseClient.rpc(
+        "update_demo_deposit_status",
+        {
+            p_deposit_id: depositId,
+            p_status: newStatus
+        }
+    );
+
+    if (error) {
+
+        console.error(
+            "Deposit status update error:",
+            error
+        );
+
+        alert(
+            "Unable to update deposit status."
+        );
+
+        return;
+    }
+
+    if (!data || !data.success) {
+
+        alert(
+            data?.message ||
+            "Deposit update failed."
+        );
+
+        return;
+    }
+
+    await loadAdminDeposits();
+    }
+// =========================
+// LOAD DEPOSITS
+// =========================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        loadAdminDeposits();
+
+        const refreshButton =
+            document.getElementById(
+                "refreshDepositsBtn"
+            );
+
+        if (refreshButton) {
+
+            refreshButton.addEventListener(
+                "click",
+                loadAdminDeposits
+            );
+        }
+    }
+);
+    
