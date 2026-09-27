@@ -2921,3 +2921,232 @@ nav a:hover, nav a.active{color:#fff}
 .mini-chart{height:70px;background:linear-gradient(180deg,rgba(94,233,160,0.15),transparent);border-radius:12px;padding:10px}
 .card-stats{display:flex;justify-content:space-between;margin-top:18px;border-top:1px solid rgba(255,255,255,0.06);padding-top:16px}
 .card-stats small{color:var(--muted);display:block;font-size:11px}.card-stats b{font-size:14px}    
+/* FEATURES */
+.features{padding:80px 6%;text-align:center}
+.features.alt{background:rgba(255,255,255,0.02);border-top:1px solid rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.05)}
+.features h2{font-size:32px;letter-spacing:-1px;margin-bottom:10px}
+.section-text{color:var(--muted);margin-bottom:40px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:left}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:28px;transition:.4s}
+.card:hover{transform:translateY(-8px);background:rgba(255,255,255,0.05);border-color:rgba(94,233,160,0.2)}
+.feature-icon{font-size:26px;background:rgba(255,255,255,0.05);width:48px;height:48px;display:grid;place-items:center;border-radius:12px}
+.card h3{margin:16px 0 8px}.card p{color:var(--muted);font-size:14px;line-height:1.6}
+.steps .step{position:relative}.num{font-size:42px;font-weight:800;opacity:.08;position:absolute;top:18px;right:24px}
+  /* CTA */
+.cta{margin:80px 6%;background:linear-gradient(90deg,#121a33,#152a3a);border:1px solid rgba(255,255,255,0.06);border-radius:24px;padding:60px;text-align:center}
+.cta h2{font-size:32px;margin-bottom:12px}.cta p{color:var(--muted);margin-bottom:24px}
+
+/* FOOTER */
+footer{text-align:center;padding:30px;color:var(--muted);font-size:13px;border-top:1px solid rgba(255,255,255,0.06)}
+
+/* ANIMATION REVEAL */
+.reveal{opacity:0;transform:translateY(30px);transition:0.8s cubic-bezier(.16,1,.3,1)}
+.reveal.show{opacity:1;transform:translateY(0)}
+.cards .reveal:nth-child(2){transition-delay:.1s}.cards .reveal:nth-child(3){transition-delay:.2s}
+
+@media(max-width:900px){.hero{grid-template-columns:1fr;padding-top:120px}.hero h1{font-size:38px}.cards{grid-template-columns:1fr}header{padding:16px 5%}}
+/* =========================
+   DEMO DEPOSIT HISTORY
+========================= */
+
+.deposit-history {
+    display: grid;
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.deposit-history-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+}
+
+.deposit-history-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.deposit-history-top div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.deposit-history-top span:first-child {
+    color: var(--text-light);
+    font-size: 12px;
+}
+
+.deposit-history-top strong {
+    color: var(--text);
+    font-size: 24px;
+}
+
+.deposit-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+
+.deposit-status.pending {
+    background: rgba(245, 158, 11, 0.12);
+    color: var(--yellow);
+}
+
+.deposit-status.approved {
+    background: rgba(34, 197, 94, 0.12);
+    color: var(--green);
+}
+
+.deposit-status.cancelled {
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--red);
+}
+
+.deposit-history-details {
+    margin-top: 18px;
+    border-top: 1px solid var(--border);
+    padding-top: 15px;
+    display: grid;
+    gap: 10px;
+}
+
+.deposit-history-details div {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.deposit-history-details span {
+    color: var(--text-dim);
+    font-size: 13px;
+}
+
+.deposit-history-details strong {
+    color: var(--text);
+    font-size: 13px;
+    text-align: right;
+                                                 }
+/* =========================
+   ADMIN DEPOSITS
+========================= */
+
+.admin-deposits {
+    display: grid;
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.admin-deposit-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+}
+
+.admin-deposit-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.admin-deposit-header div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.admin-deposit-header span:first-child {
+    color: var(--text-light);
+    font-size: 12px;
+}
+
+.admin-deposit-header strong {
+    color: var(--text);
+    font-size: 24px;
+}
+
+.admin-deposit-details {
+    margin-top: 18px;
+    padding: 5px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+
+.admin-deposit-details p {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin: 0;
+    padding: 11px 0;
+}
+
+.admin-deposit-details p span {
+    color: var(--text-dim);
+    font-size: 13px;
+}
+
+.admin-deposit-details p strong {
+    color: var(--text);
+    font-size: 13px;
+    text-align: right;
+    max-width: 70%;
+    word-break: break-word;
+}
+
+.admin-deposit-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.admin-deposit-actions button {
+    flex: 1;
+    min-width: 120px;
+}
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+    .deposit-history-card,
+    .admin-deposit-card {
+        padding: 16px;
+    }
+
+    .deposit-history-top,
+    .admin-deposit-header {
+        flex-direction: column;
+    }
+
+    .deposit-history-top strong,
+    .admin-deposit-header strong {
+        font-size: 21px;
+    }
+
+    .deposit-history-details div,
+    .admin-deposit-details p {
+        align-items: flex-start;
+    }
+
+    .admin-deposit-actions {
+        flex-direction: column;
+    }
+
+    .admin-deposit-actions button {
+        width: 100%;
+    }
+}
