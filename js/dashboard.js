@@ -902,4 +902,427 @@ withdrawals.forEach(withdrawal => {
                     Withdrawal ID
                 </span>
 
-                <strong class="wi
+                <strong class="withdrawal-id">
+                    #${withdrawal.id}
+                </strong>
+            </div>
+
+            <span class="withdrawal-status ${status}">
+                ${statusLabel}
+            </span>
+
+        </div>
+
+
+        <div class="withdrawal-amount-box">
+
+            <span>Withdrawal Amount</span>
+
+            <strong>
+                ₦${amount}
+            </strong>
+
+        </div>
+
+
+        <div class="withdrawal-bank-details">
+
+            <div class="withdrawal-detail-row">
+                <span>🏦 Bank</span>
+                <strong>
+                    ${withdrawal.bank_name}
+                </strong>
+            </div>
+            <div class="withdrawal-detail-row">
+                <span>👤 Account Name</span>
+                <strong>
+                    ${withdrawal.account_name}
+                </strong>
+            </div>
+
+            <div class="withdrawal-detail-row">
+                <span>💳 Account Number</span>
+                <strong>
+                    ${maskedAccount}
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="withdrawal-date-time">
+
+            <div>
+                <span>📅 Date</span>
+                <strong>${formattedDate}</strong>
+            </div>
+
+            <div>
+                <span>🕐 Time</span>
+                <strong>${formattedTime}</strong>
+            </div>
+
+        </div>
+
+
+        <div class="withdrawal-timeline">
+
+            <div class="timeline-line"></div>
+
+            <div class="timeline-step active">
+
+                <div class="timeline-dot">
+                    ✓
+                </div>
+
+                <div>
+                    <strong>Requested</strong>
+                    <span>Withdrawal request created</span>
+                </div>
+
+            </div>
+
+
+            <div class="timeline-step ${
+                processingActive ? "active" : ""
+            }">
+
+                <div class="timeline-dot">
+                    ${processingActive ? "✓" : "2"}
+                </div>
+
+                <div>
+                    <strong>Processing</strong>
+                    <span>
+                        Demo withdrawal being processed
+                    </span>
+                </div>
+                </div>
+
+
+            <div class="timeline-step ${
+                completedActive ? "active" : ""
+            }">
+
+                <div class="timeline-dot">
+                    ${completedActive ? "✓" : "3"}
+                </div>
+
+                <div>
+                    <strong>Completed</strong>
+                    <span>
+                        Demo withdrawal completed
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+
+        ${
+            cancelled
+                ? `
+                    <div class="withdrawal-cancelled">
+                        ⚠️ This demo withdrawal was cancelled.
+                    </div>
+                `
+                : ""
+        }
+    `;
+
+    container.appendChild(card);
+});
+                    }
+// =========================
+// AUTO REFRESH DASHBOARD
+// =========================
+
+setInterval(async () => {
+
+    try {
+
+        await loadDashboard();
+
+    } catch (error) {
+
+        console.error(
+            "Dashboard auto-refresh error:",
+            error
+        );
+
+    }
+
+}, 60 * 1000);
+// =========================
+// DEMO DEPOSIT
+// =========================
+
+async function submitDemoDeposit(event) {
+
+    event.preventDefault();
+
+    const amountInput =
+        document.getElementById("depositAmount");
+
+    const message =
+        document.getElementById("depositMessage");
+
+    const button =
+        document.getElementById("depositBtn");
+
+    const amount =
+        Number(amountInput.value);
+
+    if (!amount || amount <= 0) {
+
+        message.textContent =
+            "Please enter a valid deposit amount.";
+
+        return;
+    }
+
+    button.disabled = true;
+
+    button.textContent =
+        "Processing...";
+
+    message.textContent =
+        "Creating demo deposit request...";
+
+    const {
+        data,
+        error
+    } = await supabaseClient.rpc(
+        "create_demo_deposit",
+        {
+            p_amount: amount
+        }
+    );
+
+    if (error) {
+
+        console.error(
+            "Demo deposit error:",
+            error
+        );
+
+        message.textContent =
+            "Unable to create demo deposit.";
+
+        button.disabled = false;
+
+        button.textContent =
+            "💰 Request Demo Deposit";
+
+        return;
+    }
+
+    if (!data || !data.success) {
+
+        message.textContent =
+            data?.message ||
+            "Deposit request failed.";
+
+        button.disabled = false;
+
+        button.textContent =
+            "💰 Request Demo Deposit";
+
+        return;
+    }
+
+    message.textContent =
+        "✅ Demo deposit request created. Waiting for admin approval.";
+
+    amountInput.value = "";
+
+    button.disabled = false;
+
+    button.textContent =
+        "💰 Request Demo Deposit";
+
+    await loadDemoDepositHistory();
+    }
+// =========================
+// DEMO DEPOSIT FORM
+// =========================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const depositForm =
+            document.getElementById("depositForm");
+
+        if (depositForm) {
+
+            depositForm.addEventListener(
+                "submit",
+                submitDemoDeposit
+            );
+        }
+
+    }
+);
+ // =========================
+// LOAD DEMO DEPOSIT HISTORY
+// =========================
+
+async function loadDemoDepositHistory() {
+
+    const container =
+        document.getElementById("depositHistory");
+
+    if (!container) {
+        return;
+    }
+
+    try {
+
+        container.innerHTML =
+            "<p>Loading deposits...</p>";
+
+        const {
+            data: { user },
+            error: userError
+        } = await supabaseClient.auth.getUser();
+
+        if (userError || !user) {
+
+            container.innerHTML =
+                "<p>Please log in to view deposits.</p>";
+
+            return;
+        }
+
+        const {
+            data: deposits,
+            error
+        } = await supabaseClient
+            .from("demo_deposits")
+            .select(`
+                id,
+                amount,
+                status,
+                created_at,
+                approved_at
+            `)
+            .eq("user_id", user.id)
+            .order("created_at", {
+                ascending: false
+            });
+
+        if (error) {
+
+            console.error(
+                "Deposit history error:",
+                error
+            );
+            container.innerHTML =
+                "<p>Unable to load deposit history.</p>";
+
+            return;
+        }
+
+        if (!deposits || deposits.length === 0) {
+
+            container.innerHTML =
+                "<p>No demo deposits yet.</p>";
+
+            return;
+        }
+
+        container.innerHTML = "";
+
+        deposits.forEach(deposit => {
+
+            const card =
+                document.createElement("div");
+
+            card.className =
+                "deposit-history-card";
+
+            const amount =
+                Number(deposit.amount || 0)
+                    .toLocaleString("en-NG", {
+                        minimumFractionDigits: 2
+                    });
+
+            const date =
+                new Date(
+                    deposit.created_at
+                ).toLocaleString("en-NG");
+
+            const status =
+                deposit.status || "pending";
+
+            const statusLabel =
+                status.charAt(0).toUpperCase() +
+                status.slice(1);
+
+            card.innerHTML = `
+
+                <div class="deposit-history-top">
+
+                    <div>
+
+                        <span>
+                            Deposit #${deposit.id}
+                        </span>
+
+                        <strong>
+                            ₦${amount}
+                        </strong>
+
+                    </div>
+
+                    <span class="
+                        deposit-status
+                        ${status}
+                    ">
+                        ${statusLabel}
+                    </span>
+
+                </div>
+
+                <div class="deposit-history-details">
+
+                    <div>
+                        <span>📅 Requested</span>
+                        <strong>
+                            ${date}
+                        </strong>
+                    </div>
+
+                    ${
+                        deposit.approved_at
+                            ? `
+                                <div>
+                                    <span>✅ Approved</span>
+                                    <strong>
+                                        ${new Date(
+                                            deposit.approved_at
+                                        ).toLocaleString("en-NG")}
+                                    </strong>
+                                </div>
+                            `
+                            : ""
+                    }
+
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Unexpected deposit history error:",
+            error
+        );
+
+        container.innerHTML =
+            "<p>Unable to load deposit history.</p>";
+    }
+            }
