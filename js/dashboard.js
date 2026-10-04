@@ -1271,14 +1271,16 @@ if (flutterwaveDepositBtn) {
 
         try {
             const { data, error } =
-                await supabaseClient.functions.invoke(
-                    "flutterwave-checkout",
-                    {
-                        body: {
-                            amount: amount
-                        }
-                    }
-                );
+    await supabaseClient.functions.invoke(
+        "flutterwave-checkout",
+        {
+            body: {
+                amount: amount,
+                redirect_url:
+                    `${window.location.origin}/deposit-success.html`
+            }
+        }
+    );
 
             if (error) {
                 console.error(
