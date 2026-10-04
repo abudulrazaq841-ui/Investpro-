@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Deposit Verification - InvestPro</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+</head>
+
+<body>
+
+    <main class="auth-container">
+
+        <div class="auth-card">
+
+            <div class="auth-header">
+                <h1>InvestPro</h1>
+                <p>Demo Deposit Verification</p>
+            </div>
+
+            <div id="verificationBox">
+
+                <div class="card">
+                    <h2>⏳ Verifying Demo Deposit</h2>
+
+                    <p id="verificationMessage">
+                        Please wait while we verify your
+                        Flutterwave TEST transaction...
+                    </p>
+                </div>
+
+            </div>
+
+            <div
+                id="successBox"
+                class="card"
+                style="display: none;"
+            >
+                <h2>✅ Demo Deposit Approved</h2>
+
+                <p id="successMessage">
+                    Your demo balance has been updated.
+                </p>
+
+                <a
+                    href="dashboard.html"
+                    class="auth-btn"
+                    style="display: block; text-align: center; text-decoration: none;"
+                >
+                    Go to Dashboard
+                </a>
+            </div>
+
+            <div
+                id="errorBox"
+                class="card"
+                style="display: none;"
+            >
+                <h2>❌ Verification Failed</h2>
+
+                <p id="errorMessage">
+                    We could not verify the demo transaction.
+                </p>
+
+                <a
+                    href="dashboard.html"
+                    class="auth-btn"
+                    style="display: block; text-align: center; text-decoration: none;"
+                >
+                    Return to Dashboard
+                </a>
+            </div>
+
+            <p class="demo-warning">
+                ⚠️ TEST MODE — InvestPro is an educational
+                demo platform. No real money is being processed.
+            </p>
+
+        </div>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="js/supabase.js"></script>
+
+    <script>
+        async function verifyDemoDeposit() {
+
+            const verificationMessage =
+                document.getElementById(
+                    "verificationMessage"
+                );
+
+            const verificationBox =
+                document.getElementById(
+                    "verificationBox"
+                );
+
+            const successBox =
+                document.getElementById(
+                    "successBox"
+                );
+
+            const errorBox =
+                document.getElementById(
+                    "errorBox"
+                );
+
+            const successMessage =
+                document.getElementById(
+                    "successMessage"
+                );
+
+            const errorMessage =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+            try {
+
+                /*
+                 * Read Flutterwave callback parameters.
+                 */
+                const params =
+                    new URLSearchParams(
+                        window.location.search
+                    );
+
+                const txRef =
+                    params.get("tx_ref");
+
+                const transactionId =
+                    params.get("transaction_id");
+
+                const paymentStatus =
+                    params.get("status");
+
+                /*
+                 * Make sure Flutterwave supplied
+                 * a transaction reference.
+                 */
+                if (!txRef) {
+                    throw new Error(
+                        "Missing Flutterwave transaction reference."
+                    );
+                }
+
+                /*
+                 * If Flutterwave explicitly returned a
+                 * failed/cancelled status, don't attempt
+                 * to approve anything.
+                 */
+                if (
+                    paymentStatus &&
+                    paymentStatus.toLowerCase() !==
+                        "successful"
+                ) {
+                    throw new Error(
+                        "The Flutterwave TEST transaction was not successful."
+                    );
+                }
+
+                verificationMessage.textContent =
+                    "Checking the transaction securely...";
+
+                /*
+                 * Call our Supabase Edge Function.
+                 */
+                const { data, error } =
+                    await supabaseClient.functions.invoke(
+                        "flutterwave-verify",
+                        {
+                            body: {
+                                tx_ref: txRef,
+                                transaction_id:
+                                    transactionId
+                            }
+                        }
+                    );
+
+                if (error) {
+                    console.error(
+                        "Verification function error:",
+                        error
+                    );
+
+                    throw new Error(
+                        "Unable to verify the demo transaction."
+                    );
+                }
+
+                if (
+                    !data ||
+                    !data.success
+                ) {
+                    throw new Error(
+                        data?.message ||
+                        "Demo deposit verification failed."
+                    );
+                }
+
+                /*
+                 * Verification succeeded.
+                 */
+                verificationBox.style.display =
+                    "none";
+
+                successBox.style.display =
+                    "block";
+
+                successMessage.textContent =
+                    `₦${Number(
+                        data.amount
+                    ).toLocaleString(
+                        "en-NG",
+                        {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        }
+                    )} has been added to your demo balance.`;
+
+            } catch (error) {
+
+                console.error(
+                    "Deposit verification error:",
+                    error
+                );
+
+                verificationBox.style.display =
+                    "none";
+
+                errorBox.style.display =
+                    "block";
+
+                errorMessage.textContent =
+                    error.message ||
+                    "Unable to verify the demo transaction.";
+            }
+        }
+
+        /*
+         * Start verification.
+         */
+        verifyDemoDeposit();
+    </script>
+
+</body>
+</html>
