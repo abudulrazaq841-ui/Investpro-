@@ -1217,3 +1217,107 @@ async function loadDemoDepositHistory() {
     }
             }
 
+// ============================================
+// DEPOSIT BUTTON
+// ============================================
+
+const flutterwaveAmount = document.getElementById("flutterwaveAmount");
+const flutterwaveDepositBtn = document.getElementById("flutterwaveDepositBtn");
+const flutterwaveMessage = document.getElementById("flutterwaveMessage");
+
+if (flutterwaveDepositBtn) {
+    flutterwaveDepositBtn.addEventListener("click", async () => {
+
+        const amount = Number(flutterwaveAmount.value);
+
+        if (!amount || amount <= 0) {
+            flutterwaveMessage.textContent = "Please enter a valid amount.";
+            return;
+        }
+
+        flutterwaveMessage.textContent = "Preparing deposit...";
+
+        // Flutterwave connection will be added in the next step.
+        console.log("Deposit amount:", amount);
+    });
+}
+// ============================================
+// FLUTTERWAVE TEST DEPOSIT
+// ============================================
+
+const flutterwaveAmount =
+    document.getElementById("flutterwaveAmount");
+
+const flutterwaveDepositBtn =
+    document.getElementById("flutterwaveDepositBtn");
+
+const flutterwaveMessage =
+    document.getElementById("flutterwaveMessage");
+
+if (flutterwaveDepositBtn) {
+    flutterwaveDepositBtn.addEventListener("click", async () => {
+
+        const amount = Number(flutterwaveAmount.value);
+
+        if (!amount || amount <= 0) {
+            flutterwaveMessage.textContent =
+                "Please enter a valid amount.";
+            return;
+        }
+
+        flutterwaveDepositBtn.disabled = true;
+        flutterwaveMessage.textContent =
+            "Creating TEST checkout...";
+
+        try {
+            const { data, error } =
+                await supabaseClient.functions.invoke(
+                    "flutterwave-checkout",
+                    {
+                        body: {
+                            amount: amount
+                        }
+                    }
+                );
+
+            if (error) {
+                console.error(
+                    "Flutterwave checkout error:",
+                    error
+                );
+
+                flutterwaveMessage.textContent =
+                    "Unable to create TEST checkout.";
+
+                return;
+            }
+
+            console.log(
+                "Flutterwave checkout response:",
+                data
+            );
+
+            if (data && data.checkout_url) {
+                window.location.href = data.checkout_url;
+                return;
+            }
+
+            flutterwaveMessage.textContent =
+                "Checkout link was not returned.";
+
+        } catch (error) {
+
+            console.error(
+                "Deposit error:",
+                error
+            );
+
+            flutterwaveMessage.textContent =
+                "Unable to create TEST checkout.";
+
+        } finally {
+
+            flutterwaveDepositBtn.disabled = false;
+        }
+    });
+}

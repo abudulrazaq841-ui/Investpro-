@@ -337,14 +337,17 @@
 <section class="deposit-section">
     <h2>Make a Deposit</h2>
 
+    <p>Enter the amount you want to deposit.</p>
+
     <input
         type="number"
         id="flutterwaveAmount"
-        placeholder="Enter amount"
+        placeholder="Enter amount (₦)"
         min="1"
+        step="1"
     >
 
-    <button id="flutterwaveDepositBtn">
+    <button type="button" id="flutterwaveDepositBtn">
         Deposit with Flutterwave
     </button>
 
