@@ -1241,7 +1241,79 @@ if (flutterwaveDepositBtn) {
         console.log("Deposit amount:", amount);
     });
 }
-// ============================================
-// FLUTTERWAVE TEST DEPOSIT
-// ============================================
+// ====================== FLUTTERWAVE DEPOSIT ======================
+
+// ← REPLACE THIS with your Flutterwave TEST Public Key
+const FLW_PUBLIC_KEY = "FLWPUBK_TEST-xxxxxxxxxxxxxxxxxxxxxxxx-X";
+
+// Generate unique transaction reference
+function generateTxRef() {
+  return "INV-" + Date.now() + "-" + Math.floor(Math.random() * 1000000);
+}
+
+// Main Deposit Function
+async function makeDeposit(amount) {
+  try {
+    // Get current logged-in user
+    const { data: { user }, error } = await supabase.auth.getUser();
+
+    if (error || !user) {
+      alert("Please log in to make a deposit");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const tx_ref = generateTxRef();
+    const customerName = user.user_metadata?.full_name || user.email.split("@")[0];
+
+    FlutterwaveCheckout({
+      public_key: FLW_PUBLIC_KEY,
+      tx_ref: tx_ref,
+      amount: Number(amount),
+      currency: "NGN",                          // Change to USD, GHS, KES etc if needed
+      payment_options: "card, banktransfer, ussd, mobilemoney",
+      
+      // Redirect after payment
+      redirect_url: "deposit-success.html",
+
+      customer: {
+        email: user.email,
+        phone_number: user.user_metadata?.phone || "08000000000",
+        name: customerName,
+      },
+
+      meta: {
+        user_id: user.id,
+        purpose: "wallet_deposit"
+      },
+
+      customizations: {
+        title: "Investpro",
+        description: "Fund your investment wallet",
+        logo: "" // optional logo URL
+      },
+
+      onclose: function () {
+        console.log("Payment modal closed by user");
+      }
+    });
+
+  } catch (err) {
+    console.error("Deposit error:", err);
+    alert("Something went wrong. Please try again.");
+  }
+}
+
+// Called when user clicks the Deposit button
+function startDeposit() {
+  const amountInput = document.getElementById("depositAmount");
+  const amount = parseFloat(amountInput.value);
+
+  if (!amount || amount < 100) {
+    alert("Please enter a valid amount (minimum ₦100)");
+    return;
+  }
+
+  makeDeposit(amount);
+}
 

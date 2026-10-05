@@ -3150,3 +3150,125 @@ footer{text-align:center;padding:30px;color:var(--muted);font-size:13px;border-t
         width: 100%;
     }
 }
+/* ========== DEPOSIT CARD (Dashboard) ========== */
+.deposit-card {
+  max-width: 420px;
+  margin: 20px auto;
+  padding: 24px;
+  background: #1e1e2d;
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.deposit-card h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 1.4rem;
+}
+
+.deposit-card label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+  color: #ccc;
+}
+
+.deposit-card input {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: #2a2a3d;
+  color: white;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.deposit-card input:focus {
+  outline: none;
+  border-color: #00d09c;
+}
+
+.deposit-card button {
+  width: 100%;
+  padding: 14px;
+  background: #00d09c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.deposit-card button:hover {
+  background: #00b88a;
+}
+
+/* ========== SUCCESS PAGE ========== */
+.success-body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #0f0f1a;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  text-align: center;
+}
+
+.success-card {
+  background: #1e1e2d;
+  padding: 40px 30px;
+  border-radius: 16px;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.success-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.success-card h1 {
+  margin: 0 0 10px;
+  color: #00d09c;
+  font-size: 1.8rem;
+}
+
+.success-card p {
+  color: #aaa;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.payment-details {
+  background: #2a2a3d;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px 0;
+  font-size: 14px;
+  text-align: left;
+  line-height: 1.6;
+}
+
+.success-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 14px 28px;
+  background: #00d09c;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.success-btn:hover {
+  background: #00b88a;
+}
