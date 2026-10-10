@@ -75,75 +75,84 @@
   <a href="dashboard.html" class="back">← Back to Dashboard</a>
 
 
-<!-- Load Supabase first -->
-  <script src="js/Supabase.js"></script>
-  <script src="js/auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/Supabase.js"></script>
+<script src="js/auth.js"></script>
 
-  <script>
-    // Wait until supabase is available
-    function waitForSupabase(callback) {
-      if (typeof supabase !== "undefined") {
-        callback();
-      } else {
-        setTimeout(() => waitForSupabase(callback), 100);
-      }
-    }
+<script>
+  let currentUser = null;
 
-    let currentUser = null;
-
-    waitForSupabase(async () => {
+  async function init() {
+    try {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (!user) {
         alert("Please login first");
         window.location.href = "login.html";
         return;
       }
       currentUser = user;
-    });
-
-    async function startDeposit() {
-      const amount = Number(document.getElementById('amount').value);
-      const btn = document.getElementById('depositBtn');
-      const status = document.getElementById('status');
-
-      if (!amount || amount < 500) {
-        alert("Minimum deposit is ₦500");
-        return;
-      }
-
-      if (typeof supabase === "undefined") {
-        alert("Supabase is still loading. Please try again.");
-        return;
-      }
-
-      btn.disabled = true;
-      status.innerText = "Creating payment link...";
-
-      try {
-        const { data, error } = await supabase.functions.invoke('flutterwave-checkout', {
-          body: {
-            amount: amount,
-            redirect_url: window.location.origin + "/deposit-success.html"
-          }
-        });
-
-        if (error || !data?.success) {
-          throw new Error(data?.message || error?.message || "Failed to create payment");
-        }
-
-        localStorage.setItem('pending_tx_ref', data.reference);
-        localStorage.setItem('pending_amount', amount);
-
-        status.innerText = "Redirecting to payment...";
-        window.location.href = data.checkout_url;
-
-      } catch (err) {
-        console.error(err);
-        status.innerText = "";
-        btn.disabled = false;
-        alert(err.message || "Something went wrong. Please try again.");
-      }
+    } catch (err) {
+      console.error(err);
+      alert("Error checking login. Please refresh the page.");
     }
-  </script>
+  }
+
+  init();
+
+  async function startDeposit() {
+  const amount = Number(document.getElementById("amount").value);
+  const btn = document.getElementById("depositBtn");
+  const status = document.getElementById("status");
   
+  if (!amount || amount < 500) {
+    alert("Minimum deposit is ₦500");
+    return;
+  }
+  
+  btn.disabled = true;
+  status.innerText = "Checking login...";
+  
+  try {
+    // Check login first
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    
+    if (userError || !user) {
+      throw new Error("You are not logged in. Please go to Dashboard and login first.");
+    }
+    
+    status.innerText = "Creating payment link...";
+    
+    const { data, error } = await supabase.functions.invoke("flutterwave-checkout", {
+      body: {
+        amount: amount,
+        redirect_url: "https://checkout.flutterwave.com" // temporary safe URL
+      }
+    });
+    
+    console.log("=== FULL RESPONSE ===");
+    console.log("data:", data);
+    console.log("error:", error);
+    
+    if (error) {
+      throw new Error(error.message || JSON.stringify(error));
+    }
+    
+    if (!data || !data.success) {
+      throw new Error(data?.message || "Function returned failure");
+    }
+    
+    localStorage.setItem("pending_tx_ref", data.reference);
+    localStorage.setItem("pending_amount", amount);
+    
+    status.innerText = "Redirecting...";
+    window.location.href = data.checkout_url;
+    
+  } catch (err) {
+    console.error("CAUGHT ERROR:", err);
+    status.innerText = "";
+    btn.disabled = false;
+    alert("Error: " + (err.message || err));
+  }
+}
+</script>
