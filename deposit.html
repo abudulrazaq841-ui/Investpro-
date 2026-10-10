@@ -74,13 +74,24 @@
 
   <a href="dashboard.html" class="back">← Back to Dashboard</a>
 
+
+<!-- Load Supabase first -->
   <script src="js/Supabase.js"></script>
   <script src="js/auth.js"></script>
 
   <script>
+    // Wait until supabase is available
+    function waitForSupabase(callback) {
+      if (typeof supabase !== "undefined") {
+        callback();
+      } else {
+        setTimeout(() => waitForSupabase(callback), 100);
+      }
+    }
+
     let currentUser = null;
 
-    async function init() {
+    waitForSupabase(async () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
@@ -89,9 +100,7 @@
         return;
       }
       currentUser = user;
-    }
-
-    init();
+    });
 
     async function startDeposit() {
       const amount = Number(document.getElementById('amount').value);
@@ -103,16 +112,19 @@
         return;
       }
 
+      if (typeof supabase === "undefined") {
+        alert("Supabase is still loading. Please try again.");
+        return;
+      }
+
       btn.disabled = true;
       status.innerText = "Creating payment link...";
 
       try {
-        // Call your existing Edge Function
         const { data, error } = await supabase.functions.invoke('flutterwave-checkout', {
           body: {
             amount: amount,
             redirect_url: window.location.origin + "/deposit-success.html"
-            // If testing locally in SPCK, you may need to change the redirect_url later
           }
         });
 
@@ -120,13 +132,10 @@
           throw new Error(data?.message || error?.message || "Failed to create payment");
         }
 
-        // Save reference for later
         localStorage.setItem('pending_tx_ref', data.reference);
         localStorage.setItem('pending_amount', amount);
 
         status.innerText = "Redirecting to payment...";
-
-        // Redirect user to Flutterwave checkout
         window.location.href = data.checkout_url;
 
       } catch (err) {
@@ -137,5 +146,4 @@
       }
     }
   </script>
-</body>
-</html>
+  
