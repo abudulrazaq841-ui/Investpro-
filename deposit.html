@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deposit - Investpro</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      padding: 20px;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #1e293b;
+      padding: 25px;
+      border-radius: 12px;
+      margin-top: 40px;
+    }
+    input, button {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    input {
+      background: #334155;
+      color: white;
+    }
+    button {
+      background: #3b82f6;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    button:disabled {
+      background: #64748b;
+      cursor: not-allowed;
+    }
+    h2 { text-align: center; margin-bottom: 5px; }
+    .back {
+      display: block;
+      text-align: center;
+      margin-top: 25px;
+      color: #94a3b8;
+      text-decoration: none;
+    }
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      color: #94a3b8;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>Deposit Funds</h2>
+    <p style="text-align:center; color:#94a3b8; margin-bottom:20px;">Fund your investment account</p>
+
+    <label>Amount (₦)</label>
+    <input type="number" id="amount" placeholder="Minimum ₦500" min="500" required>
+
+    <button id="depositBtn" onclick="startDeposit()">Deposit Now</button>
+    <div id="status"></div>
+  </div>
+
+  <a href="dashboard.html" class="back">← Back to Dashboard</a>
+
+  <script src="js/Supabase.js"></script>
+  <script src="js/auth.js"></script>
+
+  <script>
+    let currentUser = null;
+
+    async function init() {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        alert("Please login first");
+        window.location.href = "login.html";
+        return;
+      }
+      currentUser = user;
+    }
+
+    init();
+
+    async function startDeposit() {
+      const amount = Number(document.getElementById('amount').value);
+      const btn = document.getElementById('depositBtn');
+      const status = document.getElementById('status');
+
+      if (!amount || amount < 500) {
+        alert("Minimum deposit is ₦500");
+        return;
+      }
+
+      btn.disabled = true;
+      status.innerText = "Creating payment link...";
+
+      try {
+        // Call your existing Edge Function
+        const { data, error } = await supabase.functions.invoke('flutterwave-checkout', {
+          body: {
+            amount: amount,
+            redirect_url: window.location.origin + "/deposit-success.html"
+            // If testing locally in SPCK, you may need to change the redirect_url later
+          }
+        });
+
+        if (error || !data?.success) {
+          throw new Error(data?.message || error?.message || "Failed to create payment");
+        }
+
+        // Save reference for later
+        localStorage.setItem('pending_tx_ref', data.reference);
+        localStorage.setItem('pending_amount', amount);
+
+        status.innerText = "Redirecting to payment...";
+
+        // Redirect user to Flutterwave checkout
+        window.location.href = data.checkout_url;
+
+      } catch (err) {
+        console.error(err);
+        status.innerText = "";
+        btn.disabled = false;
+        alert(err.message || "Something went wrong. Please try again.");
+      }
+    }
+  </script>
+</body>
+</html>

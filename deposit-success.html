@@ -1,257 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Deposit Verification - InvestPro</title>
-
-    <link
-        rel="stylesheet"
-        href="css/style.css"
-    >
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deposit Status - Investpro</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      text-align: center;
+      padding: 20px;
+    }
+    .box {
+      background: #1e293b;
+      padding: 40px 30px;
+      border-radius: 16px;
+      max-width: 380px;
+      width: 100%;
+    }
+    .success { color: #22c55e; font-size: 52px; margin-bottom: 10px; }
+    .failed { color: #ef4444; font-size: 52px; margin-bottom: 10px; }
+    a {
+      display: inline-block;
+      margin-top: 25px;
+      background: #3b82f6;
+      color: white;
+      padding: 13px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
 </head>
-
 <body>
+  <div class="box">
+    <div id="icon">Verifying payment...</div>
+    <h2 id="title">Please wait</h2>
+    <p id="message">We are confirming your deposit...</p>
+    <a href="dashboard.html" id="btn" style="display:none;">Go to Dashboard</a>
+  </div>
 
-    <main class="auth-container">
+  <script src="js/Supabase.js"></script>
 
-        <div class="auth-card">
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get("status");
+    const tx_ref = params.get("tx_ref") || localStorage.getItem('pending_tx_ref');
 
-            <div class="auth-header">
-                <h1>InvestPro</h1>
-                <p>Demo Deposit Verification</p>
-            </div>
+    const icon = document.getElementById("icon");
+    const title = document.getElementById("title");
+    const message = document.getElementById("message");
+    const btn = document.getElementById("btn");
 
-            <div id="verificationBox">
+    async function processDeposit() {
+      if (status !== "successful" && status !== "completed") {
+        icon.innerHTML = `<div class="failed">✕</div>`;
+        title.innerText = "Payment Failed or Cancelled";
+        message.innerText = "The payment was not completed. Please try again.";
+        btn.style.display = "inline-block";
+        return;
+      }
 
-                <div class="card">
-                    <h2>⏳ Verifying Demo Deposit</h2>
+      if (!tx_ref) {
+        icon.innerHTML = `<div class="failed">✕</div>`;
+        title.innerText = "Missing Reference";
+        message.innerText = "Transaction reference not found.";
+        btn.style.display = "inline-block";
+        return;
+      }
 
-                    <p id="verificationMessage">
-                        Please wait while we verify your
-                        Flutterwave TEST transaction...
-                    </p>
-                </div>
+      try {
+        // Call your existing verify function
+        const { data, error } = await supabase.functions.invoke('flutterwave-verify', {
+          body: {
+            tx_ref: tx_ref
+          }
+        });
 
-            </div>
-
-            <div
-                id="successBox"
-                class="card"
-                style="display: none;"
-            >
-                <h2>✅ Demo Deposit Approved</h2>
-
-                <p id="successMessage">
-                    Your demo balance has been updated.
-                </p>
-
-                <a
-                    href="dashboard.html"
-                    class="auth-btn"
-                    style="display: block; text-align: center; text-decoration: none;"
-                >
-                    Go to Dashboard
-                </a>
-            </div>
-
-            <div
-                id="errorBox"
-                class="card"
-                style="display: none;"
-            >
-                <h2>❌ Verification Failed</h2>
-
-                <p id="errorMessage">
-                    We could not verify the demo transaction.
-                </p>
-
-                <a
-                    href="dashboard.html"
-                    class="auth-btn"
-                    style="display: block; text-align: center; text-decoration: none;"
-                >
-                    Return to Dashboard
-                </a>
-            </div>
-
-            <p class="demo-warning">
-                ⚠️ TEST MODE — InvestPro is an educational
-                demo platform. No real money is being processed.
-            </p>
-
-        </div>
-
-    </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <script src="js/supabase.js"></script>
-
-    <script>
-        async function verifyDemoDeposit() {
-
-            const verificationMessage =
-                document.getElementById(
-                    "verificationMessage"
-                );
-
-            const verificationBox =
-                document.getElementById(
-                    "verificationBox"
-                );
-
-            const successBox =
-                document.getElementById(
-                    "successBox"
-                );
-
-            const errorBox =
-                document.getElementById(
-                    "errorBox"
-                );
-
-            const successMessage =
-                document.getElementById(
-                    "successMessage"
-                );
-
-            const errorMessage =
-                document.getElementById(
-                    "errorMessage"
-                );
-
-            try {
-
-                /*
-                 * Read Flutterwave callback parameters.
-                 */
-                const params =
-                    new URLSearchParams(
-                        window.location.search
-                    );
-
-                const txRef =
-                    params.get("tx_ref");
-
-                const transactionId =
-                    params.get("transaction_id");
-
-                const paymentStatus =
-                    params.get("status");
-
-                /*
-                 * Make sure Flutterwave supplied
-                 * a transaction reference.
-                 */
-                if (!txRef) {
-                    throw new Error(
-                        "Missing Flutterwave transaction reference."
-                    );
-                }
-
-                /*
-                 * If Flutterwave explicitly returned a
-                 * failed/cancelled status, don't attempt
-                 * to approve anything.
-                 */
-                if (
-                    paymentStatus &&
-                    paymentStatus.toLowerCase() !==
-                        "successful"
-                ) {
-                    throw new Error(
-                        "The Flutterwave TEST transaction was not successful."
-                    );
-                }
-
-                verificationMessage.textContent =
-                    "Checking the transaction securely...";
-
-                /*
-                 * Call our Supabase Edge Function.
-                 */
-                const { data, error } =
-                    await supabaseClient.functions.invoke(
-                        "flutterwave-verify",
-                        {
-                            body: {
-                                tx_ref: txRef,
-                                transaction_id:
-                                    transactionId
-                            }
-                        }
-                    );
-
-                if (error) {
-                    console.error(
-                        "Verification function error:",
-                        error
-                    );
-
-                    throw new Error(
-                        "Unable to verify the demo transaction."
-                    );
-                }
-
-                if (
-                    !data ||
-                    !data.success
-                ) {
-                    throw new Error(
-                        data?.message ||
-                        "Demo deposit verification failed."
-                    );
-                }
-
-                /*
-                 * Verification succeeded.
-                 */
-                verificationBox.style.display =
-                    "none";
-
-                successBox.style.display =
-                    "block";
-
-                successMessage.textContent =
-                    `₦${Number(
-                        data.amount
-                    ).toLocaleString(
-                        "en-NG",
-                        {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                        }
-                    )} has been added to your demo balance.`;
-
-            } catch (error) {
-
-                console.error(
-                    "Deposit verification error:",
-                    error
-                );
-
-                verificationBox.style.display =
-                    "none";
-
-                errorBox.style.display =
-                    "block";
-
-                errorMessage.textContent =
-                    error.message ||
-                    "Unable to verify the demo transaction.";
-            }
+        if (error || !data?.success) {
+          throw new Error(data?.message || error?.message || "Verification failed");
         }
 
-        /*
-         * Start verification.
-         */
-        verifyDemoDeposit();
-    </script>
+        // Clear temporary data
+        localStorage.removeItem('pending_tx_ref');
+        localStorage.removeItem('pending_amount');
 
+        // Success
+        icon.innerHTML = `<div class="success">✓</div>`;
+        title.innerText = "Deposit Successful!";
+        message.innerText = data.message || "Your account has been credited successfully.";
+        btn.style.display = "inline-block";
+
+      } catch (err) {
+        console.error(err);
+        icon.innerHTML = `<div class="failed">✕</div>`;
+        title.innerText = "Verification Error";
+        message.innerText = err.message || "Something went wrong while confirming your payment.";
+        btn.style.display = "inline-block";
+      }
+    }
+
+    processDeposit();
+  </script>
 </body>
 </html>
