@@ -131,7 +131,8 @@ return_rate
 window.investmentsData = investments || [];
 
 const container =  
-    document.getElementById("investmentsContainer");  
+    document.getElementById("investmentsContainer"); 
+    if (!container) return;
 
 if (investmentError) {  
     console.error("Investment error:", investmentError);  
@@ -552,51 +553,22 @@ if (referralBonusElement) {
 // =========================
 
 document.addEventListener("DOMContentLoaded", () => {
-  loadWithdrawalHistory();
-
-loadReferralInfo();   loadDemoDepositHistory();
-
-const copyButton =  
-    document.getElementById("copyReferralBtn");  
-
-if (copyButton) {  
-
-    copyButton.addEventListener(  
-        "click",  
-        async () => {  
-
-            const link =  
-                document.getElementById(  
-                    "referralLink"  
-                ).value;  
-
-            try {  
-
-                await navigator.clipboard.writeText(link);  
-
-                copyButton.textContent =  
-                    "✅ Copied!";  
-
-                setTimeout(() => {  
-                    copyButton.textContent =  
-                        "📋 Copy";  
-                }, 2000);  
-
-            } catch (error) {  
-
-                console.error(  
-                    "Copy error:",  
-                    error  
-                );  
-
-                alert(  
-                    "Unable to copy the referral link."  
-                );  
-            }  
-        }  
-    );  
-}
-
+    loadReferralInfo();
+    
+    const copyBtn = document.getElementById("copyReferralBtn");
+    const linkInput = document.getElementById("referralLink");
+    
+    if (copyBtn && linkInput) {
+        copyBtn.addEventListener("click", async () => {
+            try {
+                await navigator.clipboard.writeText(linkInput.value);
+            } catch {
+                linkInput.select();
+                document.execCommand("copy");
+            }
+            alert("Referral link copied!");
+        });
+    }
 });
 // =========================
 // DEMO WITHDRAWAL
@@ -638,7 +610,7 @@ async function submitDemoWithdrawal(event) {
 
     if (!amount || amount < 2000) {
     message.textContent =
-        "Minimum demo withdrawal is ₦2,000.";
+        "Minimum is ₦2,000.";
     return;
     }
 
@@ -745,7 +717,7 @@ async function submitDemoWithdrawal(event) {
                 }
             )}`;
     }
-  await loadWithdrawalHistory();
+  a
 }
 
 
@@ -769,270 +741,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 });
-// =========================
-// LOAD WITHDRAWAL HISTORY
-// =========================
 
-async function loadWithdrawalHistory() {
-
-    const container =
-        document.getElementById(
-            "withdrawalHistory"
-        );
-
-    if (!container) {
-        return;
-    }
-
-    const {
-        data: { user },
-        error: userError
-    } = await supabaseClient.auth.getUser();
-
-    if (userError || !user) {
-        container.innerHTML =
-            "<p>Please log in to view withdrawals.</p>";
-        return;
-    }
-
-    const {
-        data: withdrawals,
-        error
-    } = await supabaseClient
-        .from("demo_withdrawals")
-        .select(`
-            id,
-            amount,
-            bank_name,
-            account_name,
-            account_number,
-            status,
-            created_at
-        `)
-        .eq("user_id", user.id)
-        .order("created_at", {
-            ascending: false
-        });
-
-    if (error) {
-
-        console.error(
-            "Withdrawal history error:",
-            error
-        );
-
-        container.innerHTML =
-            "<p>Unable to load withdrawal history.</p>";
-
-        return;
-    }
-
-    if (!withdrawals || withdrawals.length === 0) {
-
-        container.innerHTML =
-            "<p>No demo withdrawals yet.</p>";
-
-        return;
-    }
-
-    container.innerHTML = "";
-withdrawals.forEach(withdrawal => {
-
-    const card =
-        document.createElement("div");
-
-    card.className =
-        "withdrawal-history-card";
-
-    const amount =
-        Number(withdrawal.amount || 0)
-            .toLocaleString("en-NG", {
-                minimumFractionDigits: 2
-            });
-
-    const dateTime =
-        new Date(withdrawal.created_at);
-
-    const formattedDate =
-        dateTime.toLocaleDateString("en-NG", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-        });
-
-    const formattedTime =
-        dateTime.toLocaleTimeString("en-NG", {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit"
-        });
-
-    const accountNumber =
-        withdrawal.account_number || "";
-
-    const maskedAccount =
-        accountNumber.length >= 4
-            ? "•••• •••• " + accountNumber.slice(-4)
-            : accountNumber;
-
-    const status =
-        withdrawal.status || "pending";
-
-    const statusLabel =
-        status.charAt(0).toUpperCase() +
-        status.slice(1);
-
-    const pendingActive =
-        true;
-
-    const processingActive =
-        ["processing", "completed"].includes(status);
-
-    const completedActive =
-        status === "completed";
-
-    const cancelled =
-        status === "cancelled";
-
-    card.innerHTML = `
-        <div class="withdrawal-history-top">
-
-            <div>
-                <span class="withdrawal-history-label">
-                    Withdrawal ID
-                </span>
-
-                <strong class="withdrawal-id">
-                    #${withdrawal.id}
-                </strong>
-            </div>
-
-            <span class="withdrawal-status ${status}">
-                ${statusLabel}
-            </span>
-
-        </div>
-
-
-        <div class="withdrawal-amount-box">
-
-            <span>Withdrawal Amount</span>
-
-            <strong>
-                ₦${amount}
-            </strong>
-
-        </div>
-
-
-        <div class="withdrawal-bank-details">
-
-            <div class="withdrawal-detail-row">
-                <span>🏦 Bank</span>
-                <strong>
-                    ${withdrawal.bank_name}
-                </strong>
-            </div>
-            <div class="withdrawal-detail-row">
-                <span>👤 Account Name</span>
-                <strong>
-                    ${withdrawal.account_name}
-                </strong>
-            </div>
-
-            <div class="withdrawal-detail-row">
-                <span>💳 Account Number</span>
-                <strong>
-                    ${maskedAccount}
-                </strong>
-            </div>
-
-        </div>
-
-
-        <div class="withdrawal-date-time">
-
-            <div>
-                <span>📅 Date</span>
-                <strong>${formattedDate}</strong>
-            </div>
-
-            <div>
-                <span>🕐 Time</span>
-                <strong>${formattedTime}</strong>
-            </div>
-
-        </div>
-
-
-        <div class="withdrawal-timeline">
-
-            <div class="timeline-line"></div>
-
-            <div class="timeline-step active">
-
-                <div class="timeline-dot">
-                    ✓
-                </div>
-
-                <div>
-                    <strong>Requested</strong>
-                    <span>Withdrawal request created</span>
-                </div>
-
-            </div>
-
-
-            <div class="timeline-step ${
-                processingActive ? "active" : ""
-            }">
-
-                <div class="timeline-dot">
-                    ${processingActive ? "✓" : "2"}
-                </div>
-
-                <div>
-                    <strong>Processing</strong>
-                    <span>
-                        Demo withdrawal being processed
-                    </span>
-                </div>
-                </div>
-
-
-            <div class="timeline-step ${
-                completedActive ? "active" : ""
-            }">
-
-                <div class="timeline-dot">
-                    ${completedActive ? "✓" : "3"}
-                </div>
-
-                <div>
-                    <strong>Completed</strong>
-                    <span>
-                        Demo withdrawal completed
-                    </span>
-                </div>
-
-            </div>
-
-        </div>
-
-        ${
-            cancelled
-                ? `
-                    <div class="withdrawal-cancelled">
-                        ⚠️ This demo withdrawal was cancelled.
-                    </div>
-                `
-                : ""
-        }
-    `;
-
-    container.appendChild(card);
-});
-                    }
 // =========================
 // AUTO REFRESH DASHBOARD
 // =========================
@@ -1054,166 +763,28 @@ setInterval(async () => {
 
 }, 60 * 1000);
 
- // =========================
-// LOAD DEMO DEPOSIT HISTORY
-// =========================
 
-async function loadDemoDepositHistory() {
-
-    const container =
-        document.getElementById("depositHistory");
-
-    if (!container) {
-        return;
+    //__________________
+    //deposit function//
+    //_-_-_-_-_-_-_-_-//
+    
+   document.getElementById("depositBtn").addEventListener("click", async () => {
+    const amount = Number(document.getElementById("depositAmount").value);
+    if (!(amount > 0)) return alert("Enter a valid amount");
+    
+    const { data, error } = await supabaseClient.functions.invoke("create-deposit", {
+        body: { amount },
+    });
+    
+    if (error) {
+        let msg = error.message;
+        try {
+            const text = await error.context.text();
+            try { msg = JSON.parse(text).error || text; } catch { msg = text; }
+        } catch {}
+        return alert("Deposit error: " + msg);
     }
-
-    try {
-
-        container.innerHTML =
-            "<p>Loading deposits...</p>";
-
-        const {
-            data: { user },
-            error: userError
-        } = await supabaseClient.auth.getUser();
-
-        if (userError || !user) {
-
-            container.innerHTML =
-                "<p>Please log in to view deposits.</p>";
-
-            return;
-        }
-
-        const {
-            data: deposits,
-            error
-        } = await supabaseClient
-            .from("demo_deposits")
-            .select(`
-                id,
-                amount,
-                status,
-                created_at,
-                approved_at
-            `)
-            .eq("user_id", user.id)
-            .order("created_at", {
-                ascending: false
-            });
-
-        if (error) {
-
-            console.error(
-                "Deposit history error:",
-                error
-            );
-            container.innerHTML =
-                "<p>Unable to load deposit history.</p>";
-
-            return;
-        }
-
-        if (!deposits || deposits.length === 0) {
-
-            container.innerHTML =
-                "<p>No demo deposits yet.</p>";
-
-            return;
-        }
-
-        container.innerHTML = "";
-
-        deposits.forEach(deposit => {
-
-            const card =
-                document.createElement("div");
-
-            card.className =
-                "deposit-history-card";
-
-            const amount =
-                Number(deposit.amount || 0)
-                    .toLocaleString("en-NG", {
-                        minimumFractionDigits: 2
-                    });
-
-            const date =
-                new Date(
-                    deposit.created_at
-                ).toLocaleString("en-NG");
-
-            const status =
-                deposit.status || "pending";
-
-            const statusLabel =
-                status.charAt(0).toUpperCase() +
-                status.slice(1);
-
-            card.innerHTML = `
-
-                <div class="deposit-history-top">
-
-                    <div>
-
-                        <span>
-                            Deposit #${deposit.id}
-                        </span>
-
-                        <strong>
-                            ₦${amount}
-                        </strong>
-
-                    </div>
-
-                    <span class="
-                        deposit-status
-                        ${status}
-                    ">
-                        ${statusLabel}
-                    </span>
-
-                </div>
-
-                <div class="deposit-history-details">
-
-                    <div>
-                        <span>📅 Requested</span>
-                        <strong>
-                            ${date}
-                        </strong>
-                    </div>
-
-                    ${
-                        deposit.approved_at
-                            ? `
-                                <div>
-                                    <span>✅ Approved</span>
-                                    <strong>
-                                        ${new Date(
-                                            deposit.approved_at
-                                        ).toLocaleString("en-NG")}
-                                    </strong>
-                                </div>
-                            `
-                            : ""
-                    }
-
-                </div>
-            `;
-
-            container.appendChild(card);
-        });
-
-    } catch (error) {
-
-        console.error(
-            "Unexpected deposit history error:",
-            error
-        );
-
-        container.innerHTML =
-            "<p>Unable to load deposit history.</p>";
-    }
-            }
-
+    if (!data?.link) return alert(data?.error || "Deposit failed");
+    
+    window.location.href = data.link;
+});

@@ -1,20 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Investment Plans - InvestPro</title>
-
     <link rel="stylesheet" href="css/style.css">
-</head>
+    <style>
+        .pl-wrap { max-width: 520px; margin: 0 auto; padding: 24px 16px 40px; }
+        .pl-back { color: #9aa4b2; text-decoration: none; font-size: 14px; }
+        .pl-title { text-align: center; margin: 18px 0 6px; font-size: 28px; }
+        .pl-sub { text-align: center; color: #9aa4b2; margin-bottom: 22px; }
 
+        .pl-card { position: relative; overflow: hidden; background: #0f172a; border: 1px solid #1e293b; border-radius: 24px; padding: 22px; margin-bottom: 20px; }
+        .pl-card.popular { border-color: #f59e0b; }
+        .pl-ribbon { position: absolute; top: 14px; right: -34px; transform: rotate(40deg); background: #f59e0b; color: #111; font-size: 11px; font-weight: 700; padding: 4px 40px; }
+        .pl-name { font-size: 22px; font-weight: 700; margin: 0; padding-right: 40px; }
+        .pl-loc { color: #9aa4b2; font-size: 14px; margin: 4px 0 16px; }
+
+        .pl-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+        .pl-stat { background: #111c33; border-radius: 14px; padding: 12px 6px; text-align: center; }
+        .pl-stat strong { display: block; color: #f59e0b; font-size: 18px; }
+        .pl-stat span { color: #9aa4b2; font-size: 12px; }
+
+        .pl-features { list-style: none; padding: 0; margin: 0 0 18px; }
+        .pl-features li { margin: 8px 0; font-size: 15px; }
+        .pl-features li::before { content: "✓ "; color: #22c55e; font-weight: 700; }
+
+        .pl-btn { width: 100%; border: 0; border-radius: 16px; padding: 16px; font-size: 17px; font-weight: 700; background: #f59e0b; color: #111; cursor: pointer; }
+        .pl-card:not(.popular) .pl-btn.alt { background: #1e293b; color: #fff; }
+
+        .pl-risk { background: #1a1205; border: 1px solid #f59e0b; border-radius: 18px; padding: 16px; font-size: 14px; line-height: 1.5; color: #fcd9a0; }
+        .pl-wallet { background: #0f172a; border: 1px solid #1e293b; border-radius: 20px; padding: 18px; margin-bottom: 20px; }
+.pl-wallet input { width: 100%; box-sizing: border-box; margin: 10px 0; padding: 12px; border-radius: 12px; border: 1px solid #334; background: #111c33; color: #fff; }
+.pl-notice { color: #f59e0b; font-size: 14px; margin: 8px 0 0; }
+.pm-overlay { position: fixed; inset: 0; background: rgba(2,6,18,.75); backdrop-filter: blur(4px); display: none; align-items: flex-end; justify-content: center; z-index: 999; }
+.pm-overlay.open { display: flex; }
+.pm-box { position: relative; width: 100%; max-width: 480px; background: #0f172a; border: 1px solid #1e293b; border-radius: 24px 24px 0 0; padding: 24px 20px 28px; animation: pmUp .25s ease; }
+@keyframes pmUp { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+.pm-close { position: absolute; top: 14px; right: 14px; background: #1e293b; color: #fff; border: 0; width: 34px; height: 34px; border-radius: 50%; font-size: 16px; cursor: pointer; }
+.pm-icon { font-size: 34px; }
+.pm-box h3 { margin: 6px 0 2px; font-size: 22px; }
+.pm-loc { color: #9aa4b2; font-size: 14px; margin: 0 0 14px; }
+.pm-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.pm-stat { background: #111c33; border-radius: 12px; padding: 10px 4px; text-align: center; }
+.pm-stat strong { display: block; color: #f59e0b; font-size: 15px; }
+.pm-stat span { color: #9aa4b2; font-size: 11px; }
+.pm-bal { display: flex; justify-content: space-between; font-size: 14px; color: #9aa4b2; margin-bottom: 8px; }
+.pm-bal strong { color: #fff; }
+.pm-input { width: 100%; box-sizing: border-box; padding: 14px; font-size: 18px; border-radius: 14px; border: 1px solid #334; background: #111c33; color: #fff; }
+.pm-input:focus { outline: none; border-color: #f59e0b; }
+.pm-preview { margin: 12px 0 4px; padding: 12px; border-radius: 12px; background: rgba(245,158,11,.1); color: #fcd9a0; font-size: 14px; }
+.pm-error { color: #f87171; font-size: 14px; min-height: 20px; margin: 6px 0; }
+.pm-confirm { width: 100%; border: 0; border-radius: 16px; padding: 16px; font-size: 17px; font-weight: 700; background: #f59e0b; color: #111; cursor: pointer; }
+.pm-confirm:disabled { opacity: .6; }
+.pm-success { text-align: center; padding: 10px 0; }
+.pm-success .big { font-size: 54px; }
+    </style>
+</head>
 <body>
 
 <header>
     <div class="logo">InvestPro</div>
-
     <nav>
         <a href="dashboard.html">Dashboard</a>
         <a href="plans.html">Plans</a>
@@ -22,242 +68,289 @@
     </nav>
 </header>
 
-<section class="features plans-page">
+<div class="pl-wrap">
+    <a class="pl-back" href="dashboard.html">← Dashboard</a>
 
-    <p class="hero-label">📊 DEMO INVESTMENT PLANS</p>
+    <h2 class="pl-title">Investment Plans</h2>
+    <p class="pl-sub">Choose a plan that fits your budget.</p>
+    
+    <div class="pl-wallet" id="walletBox">
+    <div>Your balance: <strong id="walletBalance">₦0</strong></div>
+    <p id="depositNotice" class="pl-notice"></p>
+    <input type="number" id="plDepositAmount" placeholder="Deposit amount (NGN), min 1,000" min="1000">
+    <button type="button" id="plDepositBtn" class="pl-btn">💳 Deposit with Flutterwave</button>
+</div>
 
-    <h2>Choose a Demo Plan</h2>
+    <div id="plansContainer"><p>Please wait...</p></div>
 
-    <p class="section-text">
-        Explore the available demo plans and compare their
-        duration and return rates.
-    </p>
+    <div class="pl-risk" id="riskBox"></div>
+</div>
 
-    <div id="plansContainer" class="cards">
-        <p>please wait 💥...</p>
+<div class="pm-overlay" id="planModal">
+    <div class="pm-box">
+        <button type="button" class="pm-close" id="pmClose">✕</button>
+
+        <div id="pmFormView">
+            <div class="pm-icon" id="pmIcon">📈</div>
+            <h3 id="pmTitle"></h3>
+            <p class="pm-loc" id="pmLoc"></p>
+
+            <div class="pm-stats">
+                <div class="pm-stat"><strong id="pmMin"></strong><span>Minimum</span></div>
+                <div class="pm-stat"><strong id="pmRate"></strong><span>Return</span></div>
+                <div class="pm-stat"><strong id="pmDays"></strong><span>Duration</span></div>
+            </div>
+
+            <div class="pm-bal"><span>Your balance</span><strong id="pmBalance"></strong></div>
+            <input type="number" id="pmAmount" class="pm-input" inputmode="numeric" placeholder="Enter amount (₦)">
+            <div class="pm-preview" id="pmPreview">Enter an amount to see your total.</div>
+            <div class="pm-error" id="pmError"></div>
+
+            <button type="button" class="pm-confirm" id="pmConfirm">Confirm Investment</button>
+        </div>
+
+        <div class="pm-success" id="pmSuccessView" style="display:none">
+            <div class="big">✅</div>
+            <h3>Investment created</h3>
+            <p id="pmSuccessText" class="pm-loc"></p>
+            <button type="button" class="pm-confirm" id="pmDone">Go to Dashboard</button>
+        </div>
     </div>
-
-</section>
-
+</div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase.js"></script>
-<script src="js/dashboard.js"></script>
+<script src="js/Supabase.js"></script>
 
 <script>
-async function loadPlans() {
+// ===== EDIT THIS TEXT: only keep statements that are true =====
+const RISK_TEXT =
+    "⚠️ Risk Disclosure: All investments involve risk. " +
+    "Returns are not guaranteed and capital is at risk.";
 
-    const {
-        data: { user }
-    } = await supabaseClient.auth.getUser();
+document.getElementById("riskBox").textContent = RISK_TEXT;
 
-    if (!user) {
-        window.location.href = "login.html";
-        return;
-    }
+const naira = (n) => "₦" + Number(n || 0).toLocaleString("en-NG");
 
-    const { data: plans, error } =
-        await supabaseClient
-            .from("investment_plans")
-            .select("*")
-            .order("min_amount", { ascending: true });
-
-    const container =
-        document.getElementById("plansContainer");
-
-    if (error) {
-    container.innerHTML =
-        `<p>Error: ${error.message}</p>`;
-
-    console.error("Supabase error:", error);
-    return;
+function el(tag, className, text) {
+    const e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
 }
 
+function stat(value, label) {
+    const box = el("div", "pl-stat");
+    box.append(el("strong", "", value), el("span", "", label));
+    return box;
+}
+let walletBalance = 0;
+let hasApprovedDeposit = false;
+
+async function loadWallet(userId) {
+    const { data: profile } = await supabaseClient
+        .from("profiles").select("balance").eq("id", userId).single();
+    walletBalance = Number(profile?.balance || 0);
+
+    const { count } = await supabaseClient
+        .from("demo_deposits")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId)
+        .eq("status", "approved");
+    hasApprovedDeposit = (count || 0) > 0;
+
+    document.getElementById("walletBalance").textContent = naira(walletBalance);
+    document.getElementById("depositNotice").textContent = hasApprovedDeposit
+        ? "" : "Make a deposit first to unlock the plans.";
+}
+
+document.getElementById("plDepositBtn").addEventListener("click", async () => {
+    const amount = Number(document.getElementById("plDepositAmount").value);
+    if (!(amount >= 1000)) return alert("Minimum deposit is ₦1,000.");
+
+    const btn = document.getElementById("plDepositBtn");
+    btn.disabled = true;
+    btn.textContent = "Opening payment...";
+
+    const { data, error } = await supabaseClient.functions.invoke("create-deposit", {
+        body: { amount },
+    });
+
+    if (error || !data?.link) {
+        let msg = data?.error || error?.message || "Deposit failed";
+        try {
+            const t = await error.context.text();
+            try { msg = JSON.parse(t).error || t; } catch { msg = t; }
+        } catch {}
+        alert("Deposit error: " + msg);
+        btn.disabled = false;
+        btn.textContent = "💳 Deposit with Flutterwave";
+        return;
+    }
+    window.location.href = data.link;
+});
+
+async function loadPlans() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) { window.location.href = "login.html"; return; }
+    
+    await loadWallet(user.id);
+    
+    const { data: plans, error } = await supabaseClient
+        .from("investment_plans")
+        .select("*")
+        .order("min_amount", { ascending: true });
+    
+    const container = document.getElementById("plansContainer");
+    
+    if (error) {
+        container.textContent = "Error: " + error.message;
+        console.error(error);
+        return;
+    }
+    
     container.innerHTML = "";
-
-    plans.forEach(plan => {
-
-        const card = document.createElement("div");
-
-        card.className = "card";
-
-        card.innerHTML = `
-            <h3>${plan.name}</h3>
-
-            <p>${plan.description || ""}</p>
-
-            <p>
-                <strong>Minimum:</strong>
-                ₦${Number(plan.min_amount).toLocaleString("en-NG")}
-            </p>
-
-            <p>
-                <strong>Duration:</strong>
-                ${plan.duration_days} days
-            </p>
-
-            <p>
-                <strong>Demo return rate:</strong>
-                ${plan.return_rate}%
-            </p>
-
-            <button class="auth-btn" type="button"
-                onclick="selectPlan(${plan.id})">
-                Select Plan
-            </button>
-        `;
-
+    
+    plans.forEach((plan) => {
+        const card = el("div", "pl-card" + (plan.is_popular ? " popular" : ""));
+        if (plan.is_popular) card.appendChild(el("div", "pl-ribbon", "MOST POPULAR"));
+        
+        card.appendChild(el("h3", "pl-name", `${plan.icon || "📈"} ${plan.name}`));
+        card.appendChild(el("p", "pl-loc", plan.location || plan.description || ""));
+        
+        const stats = el("div", "pl-stats");
+        stats.append(
+            stat(naira(plan.min_amount), "Min. Investment"),
+            stat(`${plan.return_rate}%`, "Return"),
+            stat(`${plan.duration_days} Days`, "Duration")
+        );
+        card.appendChild(stats);
+        
+        const ul = el("ul", "pl-features");
+        (plan.features || []).forEach((f) => ul.appendChild(el("li", "", f)));
+        card.appendChild(ul);
+        
+        const locked = !hasApprovedDeposit;
+        const short = walletBalance < Number(plan.min_amount);
+        
+        const label = locked ?
+            "🔒 Deposit to unlock" :
+            short ?
+            `Deposit more to invest (min ${naira(plan.min_amount)})` :
+            `Invest from ${naira(plan.min_amount)}`;
+        
+        const btn = el("button", "pl-btn" + (plan.is_popular ? "" : " alt"), label);
+        btn.type = "button";
+        btn.addEventListener("click", () => {
+            if (locked || short) {
+                document.getElementById("walletBox")
+                    .scrollIntoView({ behavior: "smooth" });
+                return;
+            }
+            selectPlan(plan.id);
+        });
+        card.appendChild(btn);
+        
         container.appendChild(card);
     });
 }
 
+let activePlan = null;
+const planModal = document.getElementById("planModal");
+
+function closePlanModal() { planModal.classList.remove("open"); }
+
+function updatePreview() {
+    if (!activePlan) return;
+    const amt = Number(document.getElementById("pmAmount").value);
+    const box = document.getElementById("pmPreview");
+    if (!(amt > 0)) { box.textContent = "Enter an amount to see your total."; return; }
+    const total = amt * (1 + Number(activePlan.return_rate) / 100);
+    box.textContent =
+        `Demo total after ${activePlan.duration_days} days: ${naira(total)} ` +
+        `(profit ${naira(total - amt)})`;
+}
 
 async function selectPlan(planId) {
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    if (userError || !user) { window.location.href = "login.html"; return; }
 
-    const {
-        data: { user },
-        error: userError
-    } = await supabaseClient.auth.getUser();
-
-    if (userError || !user) {
-        alert("Please login first.");
-        window.location.href = "login.html";
-        return;
-    }
-
-    const {
-        data: plan,
-        error: planError
-    } = await supabaseClient
+    const { data: plan, error: planError } = await supabaseClient
         .from("investment_plans")
-        .select(`
-            id,
-            name,
-            min_amount,
-            duration_days,
-            return_rate
-        `)
+        .select("id, name, icon, location, min_amount, duration_days, return_rate")
         .eq("id", planId)
         .single();
 
-    if (planError || !plan) {
-        alert("Unable to find this demo plan.");
-        console.error(planError);
-        return;
-    }
+    if (planError || !plan) { console.error(planError); return; }
 
-    const amount = prompt(
-        `Enter your demo investment amount for ${plan.name}:\n\n` +
-        `Minimum: ₦${Number(plan.min_amount).toLocaleString("en-NG")}`
-    );
+    await loadWallet(user.id);
+    activePlan = plan;
 
-    if (amount === null) {
-        return;
-    }
+    document.getElementById("pmIcon").textContent = plan.icon || "📈";
+    document.getElementById("pmTitle").textContent = plan.name;
+    document.getElementById("pmLoc").textContent = plan.location || "";
+    document.getElementById("pmMin").textContent = naira(plan.min_amount);
+    document.getElementById("pmRate").textContent = plan.return_rate + "%";
+    document.getElementById("pmDays").textContent = plan.duration_days + " Days";
+    document.getElementById("pmBalance").textContent = naira(walletBalance);
+    document.getElementById("pmAmount").value = plan.min_amount;
+    document.getElementById("pmError").textContent = "";
+    document.getElementById("pmFormView").style.display = "";
+    document.getElementById("pmSuccessView").style.display = "none";
+    updatePreview();
 
-    const investmentAmount = Number(amount);
+    planModal.classList.add("open");
+}
 
-    if (
-        !Number.isFinite(investmentAmount) ||
-        investmentAmount <= 0
-    ) {
-        alert("Please enter a valid amount.");
-        return;
-    }
-
-    if (investmentAmount < Number(plan.min_amount)) {
-        alert(
-            `The minimum amount for ${plan.name} is ₦${Number(
-                plan.min_amount
-            ).toLocaleString("en-NG")}.`
-        );
-        return;
-    }
-
-
-    // =========================
-    // CREATE DEMO INVESTMENT
-    // =========================
-
-    const {
-        data: investmentResult,
-        error: investmentError
-    } = await supabaseClient.rpc(
-        "create_demo_investment",
-        {
-            p_plan_id: plan.id,
-            p_amount: investmentAmount
-        }
-    );
-
-    if (investmentError) {
-
-        console.error(
-            "Demo investment error:",
-            investmentError
-        );
-
-        alert(
-            "Unable to create demo investment."
-        );
-
-        return;
-    }
-
-    if (
-        !investmentResult ||
-        !investmentResult.success
-    ) {
-
-        alert(
-            investmentResult?.message ||
-            "Unable to create demo investment."
-        );
-
-        return;
-    }
-
-
-    // =========================
-    // COMPLETE DEMO REFERRAL
-    // =========================
-
-    const {
-        error: referralBonusError
-    } = await supabaseClient.rpc(
-        "complete_demo_referral",
-        {
-            p_investment_amount: investmentAmount
-        }
-    );
-
-    if (referralBonusError) {
-
-        console.error(
-            "Demo referral bonus error:",
-            referralBonusError
-        );
-    }
-
-
-    // =========================
-    // SUCCESS
-    // =========================
-
-    alert(
-        `Demo investment created successfully!\n\n` +
-        `Plan: ${plan.name}\n` +
-        `Amount: ₦${investmentAmount.toLocaleString("en-NG", {
-            minimumFractionDigits: 2
-        })}`
-    );
-
-
-    // =========================
-    // GO TO DASHBOARD
-    // =========================
-
+document.getElementById("pmAmount").addEventListener("input", updatePreview);
+document.getElementById("pmClose").addEventListener("click", closePlanModal);
+planModal.addEventListener("click", (e) => { if (e.target === planModal) closePlanModal(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closePlanModal(); });
+document.getElementById("pmDone").addEventListener("click", () => {
     window.location.replace("dashboard.html");
-  }
+});
+
+document.getElementById("pmConfirm").addEventListener("click", async () => {
+    if (!activePlan) return;
+    const err = document.getElementById("pmError");
+    const btn = document.getElementById("pmConfirm");
+    const amt = Number(document.getElementById("pmAmount").value);
+    err.textContent = "";
+
+    if (!Number.isFinite(amt) || amt <= 0) { err.textContent = "Enter a valid amount."; return; }
+    if (amt < Number(activePlan.min_amount)) {
+        err.textContent = `Minimum for this plan is ${naira(activePlan.min_amount)}.`; return;
+    }
+    if (amt > walletBalance) {
+        err.textContent = `Insufficient balance. You have ${naira(walletBalance)}. Please deposit more.`; return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Processing...";
+
+    const { data: result, error } = await supabaseClient.rpc("create_demo_investment", {
+        p_plan_id: activePlan.id,
+        p_amount: amt,
+    });
+
+    if (error || !result?.success) {
+        console.error(error);
+        err.textContent = result?.message || "Unable to create investment.";
+        btn.disabled = false;
+        btn.textContent = "Confirm Investment";
+        return;
+    }
+
+    const { error: refErr } = await supabaseClient.rpc("complete_demo_referral", {
+        p_investment_amount: amt,
+    });
+    if (refErr) console.error("Referral bonus error:", refErr);
+
+    document.getElementById("pmSuccessText").textContent =
+        `${activePlan.name}: ${naira(amt)} invested.`;
+    document.getElementById("pmFormView").style.display = "none";
+    document.getElementById("pmSuccessView").style.display = "";
+    btn.disabled = false;
+    btn.textContent = "Confirm Investment";
+});
 
 loadPlans();
 </script>

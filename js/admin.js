@@ -890,7 +890,11 @@ async function loadAdminWithdrawals() {
 
             </div>
 
-            <div class="admin-withdrawal-actions">
+            <div class="admin-withdrawal-actions">${status === "pending" ? `
+<button type="button" class="auth-btn"
+    onclick="payWithFlutterwave(${withdrawal.id})">
+    💸 Pay via Flutterwave
+</button>` : ""}
 
                 <button
                     type="button"
@@ -1250,3 +1254,117 @@ document.addEventListener(
     }
 );
     
+async function payWithFlutterwave(id) {
+  if (!confirm(`Send payout for withdrawal #${id} via Flutterwave?`)) return;
+
+  const { data, error } = await supabaseClient.functions.invoke("pay-withdrawal", {
+    body: { id },
+  });
+
+  if (error) {
+    let msg = error.message;
+    try {
+      const t = await error.context.text();
+      try { msg = JSON.parse(t).error || t; } catch { msg = t; }
+    } catch {}
+    return alert("Payout error: " + msg);
+  }
+
+  alert(data.message);
+  await loadAdminWithdrawals();
+}
+async function loadAdminUsers() {
+  const box = document.getElementById("adminUsers");
+  if (!box) return;
+  box.textContent = "Loading users...";
+
+  const { data, error } = await supabaseClient
+    .from("profiles")
+    .select("id, email, role, balance")
+    .order("email");
+
+  if (error) { box.textContent = "Unable to load users."; console.error(error); return; }
+
+  box.innerHTML = "";
+  data.forEach((u) => {
+    const row = document.createElement("div");
+    row.className = "admin-withdrawal-card";
+
+    const info = document.createElement("p");
+    info.textContent = `${u.email} | ${u.role || "user"} | ₦${Number(u.balance || 0).toLocaleString()}`;
+    row.appendChild(info);
+
+    if (u.role !== "admin") {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "danger-btn";
+      btn.textContent = "🗑️ Delete user";
+      btn.onclick = () => deleteUser(u.id, u.email);
+      row.appendChild(btn);
+    }
+    box.appendChild(row);
+  });
+}
+
+async function loadAdminUsers() {
+    const box = document.getElementById("adminUsers");
+    if (!box) return;
+    box.textContent = "Loading users...";
+    
+    const { data, error } = await supabaseClient
+        .from("profiles")
+        .select("id, email, role, balance")
+        .order("email");
+    
+    if (error) {
+        box.textContent = "Unable to load users.";
+        console.error(error);
+        return;
+    }
+    
+    box.innerHTML = "";
+    data.forEach((u) => {
+        const row = document.createElement("div");
+        row.className = "admin-withdrawal-card";
+        
+        const info = document.createElement("p");
+        info.textContent = `${u.email} | ${u.role || "user"} | ₦${Number(u.balance || 0).toLocaleString()}`;
+        row.appendChild(info);
+        
+        if (u.role !== "admin") {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "danger-btn";
+            btn.textContent = "🗑️ Delete user";
+            btn.onclick = () => deleteUser(u.id, u.email);
+            row.appendChild(btn);
+        }
+        box.appendChild(row);
+    });
+}
+
+// _-_-_-_-_-_-_-_--_-_-_-_-_-_-_//
+//Admin management function 💥
+//_-_-_-_-_-__-_-_-_-_-_-_-_-_-_-//
+
+async function deleteUser(id, email) {
+    if (!confirm(`Permanently delete ${email} and all their data?`)) return;
+    
+    const { data, error } = await supabaseClient.functions.invoke("delete-user", {
+        body: { user_id: id },
+    });
+    
+    if (error) {
+        let msg = error.message;
+        try {
+            const t = await error.context.text();
+            try { msg = JSON.parse(t).error || t; } catch { msg = t; }
+        } catch {}
+        return alert("Delete error: " + msg);
+    }
+    
+    alert(data?.message || "User deleted.");
+    loadAdminUsers();
+}
+
+loadAdminUsers();

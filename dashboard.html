@@ -72,7 +72,7 @@
     </div>
 
 </section>
-<a href="deposit.html" class="btn">+ Deposit</a>
+
 
     <!-- Summary -->
     <section class="dashboard-summary">
@@ -333,230 +333,42 @@
     <!-- =========================
      DEMO DEPOSIT
 ========================= -->
+<div id="money-section">
+  <h3>Deposit</h3>
+  <input type="number" id="depositAmount" placeholder="Amount (NGN)" min="1">
+  <button id="depositBtn">Deposit</button>
 
-<
-  <!-- =========================
-     DEMO DEPOSIT HISTORY
-========================= -->
+<div id="withdrawal-section">
+    <h3>Withdraw</h3>
+    <form id="withdrawalForm" onsubmit="submitDemoWithdrawal(event)">
+        <input type="number" id="withdrawalAmount" placeholder="Amount (NGN), min 2,000" min="2000">
+        
+        <select id="withdrawalBank">
+            <option value="">Select bank</option>
+            <option>Access Bank</option>
+            <option>Guaranty Trust Bank</option>
+            <option>First Bank of Nigeria</option>
+            <option>United Bank For Africa</option>
+            <option>Zenith Bank</option>
+            <option>Fidelity Bank</option>
+            <option>Union Bank of Nigeria</option>
+            <option>Sterling Bank</option>
+            <option>Stanbic IBTC Bank</option>
+            <option>Wema Bank</option>
+            <option>Polaris Bank</option>
+            <option>Ecobank Nigeria</option>
+            <option>Opay</option>
+        </select>
+        
+        <input type="text" id="withdrawalAccountName" placeholder="Account name">
+        <input type="text" id="withdrawalAccountNumber" placeholder="Account number (10 digits)" maxlength="10">
+        
+        <button type="submit" id="withdrawalBtn">💸 Request Demo Withdrawal</button>
+        <p id="withdrawalMessage"></p>
+    </form>
+</div>
 
-<section class="deposit-history-section">
-
-    <div class="section-heading">
-        <div>
-            <h2>📋 Demo Deposit History</h2>
-            <p>
-                Track your simulated deposit requests.
-            </p>
-        </div>
-    </div>
-
-    <div
-        id="depositHistory"
-        class="deposit-history">
-
-        <p>Loading deposits...</p>
-
-    </div>
-
-</section>
-  <!-- =========================
-     DEMO WITHDRAWAL
-========================= -->
-
-<section class="demo-withdrawal-section">
-
-    <div class="section-heading">
-        <div>
-            <h2>💸 Demo Withdrawal</h2>
-            <p>Simulate a withdrawal from your InvestPro demo balance.</p>
-        </div>
-    </div>
-
-    <div class="demo-withdrawal-card">
-
-        <div class="demo-warning">
-            ⚠️ <strong>Demo Only</strong>
-            <span>
-                No real money will be transferred.
-            </span>
-        </div>
-
-        <form id="withdrawalForm">
-
-            <div class="withdrawal-balance">
-                <span>Available Demo Balance</span>
-
-                <strong id="withdrawalBalance">
-                    ₦0.00
-                </strong>
-            </div>
-
-            <div class="form-group">
-
-                <label for="withdrawalAmount">
-                    Withdrawal Amount
-                </label>
-
-                <input
-                    type="number"
-                    id="withdrawalAmount"
-                    min="200"
-                    step="0.01"
-                    placeholder="Minimum ₦2,000"
-                >
-
-            </div>
-
-            <div class="form-group">
-
-                <label for="withdrawalBank">
-                    Bank
-                </label>
-
-                <select id="withdrawalBank" required>
-
-                    <option value="">
-                        Select bank
-                    </option>
-
-                    <option value="Access Bank">
-                        Access Bank
-                    </option>
-
-                    <option value="First Bank">
-                        First Bank
-                    </option>
-
-                    <option value="GTBank">
-                        GTBank
-                    </option>
-
-                    <option value="Kuda">
-                        Kuda
-                    </option>
-
-                    <option value="Moniepoint">
-                        Moniepoint
-                    </option>
-
-                    <option value="OPay">
-                        OPay
-                    </option>
-
-                    <option value="UBA">
-                        UBA
-                    </option>
-
-                    <option value="Zenith Bank">
-                        Zenith Bank
-                    </option>
-
-                </select>
-
-            </div>
-
-            <div class="form-group">
-
-                <label for="withdrawalAccountName">
-                    Account Name
-                </label>
-
-                <input
-                    type="text"
-                    id="withdrawalAccountName"
-                    placeholder="Enter account name"
-                    required
-                >
-
-            </div>
-
-            <div class="form-group">
-
-                <label for="withdrawalAccountNumber">
-                    Account Number
-                </label>
-
-                <input
-                    type="text"
-                    id="withdrawalAccountNumber"
-                    inputmode="numeric"
-                    maxlength="10"
-                    placeholder="Enter account number"
-                    required
-                >
-
-            </div>
-
-            <button
-                type="submit"
-                class="auth-btn"
-                id="withdrawalBtn">
-
-                💸 Request Demo Withdrawal
-
-            </button>
-
-            <p
-                id="withdrawalMessage"
-                class="form-message">
-            </p>
-
-        </form>
-
-    </div>
-
-</section>
-  <!-- =========================
-     DEMO WITHDRAWAL HISTORY
-========================= -->
-
-<section class="withdrawal-history-section">
-
-    <div class="section-heading">
-        <div>
-            <h2>📋 Demo Withdrawal History</h2>
-            <p>Track your simulated withdrawal requests.</p>
-        </div>
-    </div>
-
-    <div
-        id="withdrawalHistory"
-        class="withdrawal-history">
-
-        <p>Loading withdrawals...</p>
-
-    </div>
-
-</section>
-  
-    <section class="my-investments">
-
-        <div class="section-heading">
-
-            <div>
-                <h2>📊 My Investments</h2>
-
-                <p>
-                    Track your active demo investments and progress.
-                </p>
-            </div>
-
-            <a href="plans.html" class="dashboard-add-btn">
-                + Explore Plans
-            </a>
-
-        </div>
-
-
-        <div id="investmentsContainer" class="investment-list">
-
-            <p>
-                Loading investments...
-            </p>
-
-        </div>
-
-    </section>
+<a href="deposit-history.html">View deposit &amp; withdrawal history →</a>
 
 </main>
 <!-- Investment Details Modal -->

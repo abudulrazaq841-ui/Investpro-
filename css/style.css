@@ -3272,3 +3272,298 @@ footer{text-align:center;padding:30px;color:var(--muted);font-size:13px;border-t
 .success-btn:hover {
   background: #00b88a;
 }
+/* ==============================
+   DEPOSIT & WITHDRAWAL DESIGN
+============================== */
+
+.deposit-section,
+.withdraw-section,
+.deposit-history-section,
+.withdrawal-history-section {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 24px 0;
+}
+
+/* Section headings */
+.deposit-section h2,
+.withdraw-section h2,
+.deposit-history-section h2,
+.withdrawal-history-section h2 {
+    color: #f8fafc;
+    font-size: 25px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+/* Input fields */
+.deposit-section input,
+.withdraw-section input,
+.deposit-section select,
+.withdraw-section select {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 15px 16px;
+    margin: 12px 0;
+    border: 1px solid #2a3447;
+    border-radius: 12px;
+    background: #1e2535;
+    color: #f8fafc;
+    font-size: 16px;
+    outline: none;
+}
+
+/* Input focus */
+.deposit-section input:focus,
+.withdraw-section input:focus,
+.deposit-section select:focus,
+.withdraw-section select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Buttons */
+.deposit-section button,
+.withdraw-section button {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 15px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 12px;
+    background: #3b82f6;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+/* Button hover */
+.deposit-section button:hover,
+.withdraw-section button:hover {
+    background: #2563eb;
+}
+
+/* Disabled buttons */
+.deposit-section button:disabled,
+.withdraw-section button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Messages */
+#flutterwaveMessage,
+#withdrawMessage {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #94a3b8;
+    overflow-wrap: anywhere;
+}
+
+/* History cards */
+.deposit-history-card,
+.withdrawal-history-card {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 24px;
+    margin: 20px 0;
+    border: 1px solid #1e293b;
+    border-radius: 18px;
+    background: #151a25;
+    color: #f8fafc;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* History labels */
+.deposit-history-card p,
+.withdrawal-history-card p {
+    color: #94a3b8;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+/* Amounts */
+.deposit-history-card .amount,
+.withdrawal-history-card .amount {
+    color: #f8fafc;
+    font-size: 26px;
+    font-weight: 800;
+}
+
+/* Status badges */
+.status-approved,
+.status-success,
+.status-completed {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 30px;
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+    font-weight: 700;
+}
+
+.status-pending {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 30px;
+    background: rgba(234, 179, 8, 0.15);
+    color: #facc15;
+    font-weight: 700;
+}
+
+.status-rejected,
+.status-failed,
+.status-cancelled {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 30px;
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    font-weight: 700;
+}
+
+/* Small screens */
+@media (max-width: 600px) {
+    .deposit-section h2,
+    .withdraw-section h2,
+    .deposit-history-section h2,
+    .withdrawal-history-section h2 {
+        font-size: 22px;
+    }
+
+    .deposit-history-card,
+    .withdrawal-history-card {
+        padding: 18px;
+        border-radius: 15px;
+    }
+}
+/* =========================
+   INVESTPRO MONEY SECTION
+========================= */
+
+#money-section {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 28px 0;
+    padding: 24px;
+    background: #151a25;
+    border: 1px solid #1e293b;
+    border-radius: 18px;
+}
+
+/* Section headings */
+#money-section h3 {
+    color: #f8fafc;
+    font-size: 23px;
+    font-weight: 700;
+    margin: 22px 0 14px;
+}
+
+#money-section h3:first-child {
+    margin-top: 0;
+}
+
+/* Input fields */
+#money-section input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 15px;
+    margin: 12px 0;
+    border: 1px solid #2a3447;
+    border-radius: 12px;
+    background: #1e2535;
+    color: #f8fafc;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Placeholder text */
+#money-section input::placeholder {
+    color: #94a3b8;
+}
+
+/* Focus effect */
+#money-section input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Deposit and withdrawal buttons */
+#money-section button {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin: 14px 0 24px;
+    border: none;
+    border-radius: 12px;
+    background: #3b82f6;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+#money-section button:hover {
+    background: #2563eb;
+}
+
+#money-section button:active {
+    transform: scale(0.98);
+}
+
+#money-section button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Mobile layout */
+@media (max-width: 600px) {
+    #money-section {
+        padding: 18px;
+        border-radius: 15px;
+    }
+
+    #money-section h3 {
+        font-size: 21px;
+    }
+
+    #money-section input,
+    #money-section button {
+        font-size: 15px;
+    }
+}
+  .dh-wrap { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
+    .dh-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .dh-tabs { display: flex; gap: 8px; margin: 16px 0 8px; }
+    .dh-tabs button { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #334; background: transparent; color: inherit; cursor: pointer; font-weight: 600; }
+    .dh-tabs button.active { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+    .dh-filters { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+    .dh-filters button { padding: 8px 14px; border-radius: 999px; border: 1px solid #334; background: transparent; color: inherit; cursor: pointer; }
+    .dh-filters button.active { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+    .dh-total { padding: 14px; border-radius: 12px; background: rgba(59,130,246,.12); margin-bottom: 16px; }
+    .dh-card { padding: 14px; border-radius: 12px; border: 1px solid #223; margin-bottom: 10px; }
+    .dh-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .dh-meta { font-size: 13px; opacity: .7; margin-top: 6px; word-break: break-all; }
+    .dh-badge { padding: 3px 10px; border-radius: 999px; font-size: 12px; text-transform: capitalize; }
+    .dh-badge.approved, .dh-badge.completed { background: rgba(34,197,94,.2); color: #22c55e; }
+    .dh-badge.pending { background: rgba(234,179,8,.2); color: #eab308; }
+    .dh-badge.processing { background: rgba(59,130,246,.2); color: #60a5fa; }
+    .dh-badge.cancelled { background: rgba(239,68,68,.2); color: #ef4444; }
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+body{background:#0a0e1a;color:#d1d5db;padding:20px;line-height:1.7}
+.wrap{max-width:600px;margin:auto}
+h1{color:white;font-size:24px;margin:20px 0 10px}
+h2{color:#f59e0b;font-size:16px;margin:25px 0 8px}
+p,li{font-size:13px;margin-bottom:10px}
+ul{margin-left:18px}
+.card{background:#111827;border:1px solid #1f2937;border-radius:12px;padding:15px;margin:15px 0}
+a{color:#f59e0b}
+.back{color:#9ca3af;text-decoration:none;font-size:14px}
+
+
