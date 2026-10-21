@@ -65,6 +65,10 @@
             Don't have an account?
             <a href="signup.html">Create Account</a>
         </p>
+        <button type="button" id="googleBtn" class="auth-btn"
+        style="background:#fff;color:#111;margin-top:10px;">
+    🇬 Continue with Google
+</button>
 
     </div>
 
@@ -73,5 +77,21 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
 <script src="js/auth.js"></script>
+<script>document.getElementById("googleBtn")?.addEventListener("click", async () => {
+// remember a referral code from the link (signup.html?ref=CODE)
+const ref = new URLSearchParams(window.location.search).get("ref");
+if (ref) localStorage.setItem("pending_ref", ref);
+
+const { error } = await supabaseClient.auth.signInWithOAuth({
+provider: "google",
+options: {
+redirectTo: window.location.origin +
+window.location.pathname.replace(/[^/]*$/, "") + "dashboard.html",
+},
+});
+if (error) alert("Google login failed: " + error.message);
+});</script>
+
+
 </body>
 </html>

@@ -78,6 +78,10 @@ if (userError || !user) {
     return;  
 }  
   // Update investments before displaying them
+ 
+  const pendingRef = localStorage.getItem("pending_ref");
+await supabaseClient.rpc("ensure_profile", { p_ref: pendingRef });
+localStorage.removeItem("pending_ref");
 await updateUserInvestments();
 
 // Load user profile  
