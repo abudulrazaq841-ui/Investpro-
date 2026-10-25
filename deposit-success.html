@@ -1,116 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Deposit Status - Investpro</title>
-  
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      text-align: center;
-      padding: 20px;
-    }
-    .box {
-      background: #1e293b;
-      padding: 40px 30px;
-      border-radius: 16px;
-      max-width: 380px;
-      width: 100%;
-    }
-    .success { color: #22c55e; font-size: 52px; margin-bottom: 10px; }
-    .failed { color: #ef4444; font-size: 52px; margin-bottom: 10px; }
-    a {
-      display: inline-block;
-      margin-top: 25px;
-      background: #3b82f6;
-      color: white;
-      padding: 13px 32px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - InvestPro</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { background: #0b1324; color: #fff; font-family: sans-serif; margin: 0; }
+        .ds-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .ds-card { width: 100%; max-width: 420px; background: #1e293b; border-radius: 24px; padding: 32px 24px; text-align: center; }
+        .ds-icon { font-size: 56px; margin-bottom: 8px; }
+        .ds-card h2 { margin: 8px 0; }
+        .ds-card p { color: #9aa4b2; }
+        .ds-btn { display: block; margin-top: 14px; padding: 14px; border-radius: 14px; background: #3b82f6; color: #fff; text-decoration: none; font-weight: 600; }
+        .ds-btn.alt { background: #334155; }
+    </style>
 </head>
 <body>
-  
-  <div class="box">
-    <div id="icon">Verifying payment...</div>
-    <h2 id="title">Please wait</h2>
-    <p id="message">We are confirming your deposit...</p>
-    <a href="dashboard.html" id="btn" style="display:none;">Go to Dashboard</a>
-    <a href="plans.html">Continue to Plans →</a>
-  </div>
-  
+<div class="ds-wrap">
+    <div class="ds-card">
+        <div class="ds-icon" id="dsIcon">⏳</div>
+        <h2 id="dsTitle">Confirming your payment...</h2>
+        <p id="dsText">Please wait a few seconds.</p>
+        <a class="ds-btn" href="dashboard.html">Go to Dashboard</a>
+        <a class="ds-btn alt" href="plans.html" id="dsPlans" style="display:none">Continue to Plans →</a>
+    </div>
+</div>
 
-  <script src="js/Supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/Supabase.js"></script>
+<script>
+const params = new URLSearchParams(window.location.search);
+const txRef = params.get("tx_ref");
+const flwStatus = params.get("status");
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const status = params.get("status");
-    const tx_ref = params.get("tx_ref") || localStorage.getItem('pending_tx_ref');
+function show(icon, title, text, showPlans) {
+    document.getElementById("dsIcon").textContent = icon;
+    document.getElementById("dsTitle").textContent = title;
+    document.getElementById("dsText").textContent = text;
+    document.getElementById("dsPlans").style.display = showPlans ? "" : "none";
+}
 
-    const icon = document.getElementById("icon");
-    const title = document.getElementById("title");
-    const message = document.getElementById("message");
-    const btn = document.getElementById("btn");
-
-    async function processDeposit() {
-      if (status !== "successful" && status !== "completed") {
-        icon.innerHTML = `<div class="failed">✕</div>`;
-        title.innerText = "Payment Failed or Cancelled";
-        message.innerText = "The payment was not completed. Please try again.";
-        btn.style.display = "inline-block";
+async function checkDeposit() {
+    if (flwStatus === "cancelled") {
+        show("❌", "Payment cancelled", "No money was taken.", false);
         return;
-      }
-
-      if (!tx_ref) {
-        icon.innerHTML = `<div class="failed">✕</div>`;
-        title.innerText = "Missing Reference";
-        message.innerText = "Transaction reference not found.";
-        btn.style.display = "inline-block";
-        return;
-      }
-
-      try {
-        // Call your existing verify function
-        const { data, error } = await supabase.functions.invoke('flutterwave-verify', {
-          body: {
-            tx_ref: tx_ref
-          }
-        });
-
-        if (error || !data?.success) {
-          throw new Error(data?.message || error?.message || "Verification failed");
-        }
-
-        // Clear temporary data
-        localStorage.removeItem('pending_tx_ref');
-        localStorage.removeItem('pending_amount');
-
-        // Success
-        icon.innerHTML = `<div class="success">✓</div>`;
-        title.innerText = "Deposit Successful!";
-        message.innerText = data.message || "Your account has been credited successfully.";
-        btn.style.display = "inline-block";
-
-      } catch (err) {
-        console.error(err);
-        icon.innerHTML = `<div class="failed">✕</div>`;
-        title.innerText = "Verification Error";
-        message.innerText = err.message || "Something went wrong while confirming your payment.";
-        btn.style.display = "inline-block";
-      }
     }
 
-    processDeposit();
-  </script>
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) { window.location.href = "login.html"; return; }
+
+    if (!txRef) {
+        show("ℹ️", "Payment page", "Open your dashboard to see your balance.", false);
+        return;
+    }
+
+    // the webhook credits the balance; wait for it (up to ~30 seconds)
+    for (let i = 0; i < 10; i++) {
+        const { data } = await supabaseClient
+            .from("demo_deposits")
+            .select("status, amount")
+            .eq("payment_reference", txRef)
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+        if (data?.status === "approved") {
+            show("✅", "Deposit successful",
+                "₦" + Number(data.amount).toLocaleString("en-NG") +
+                " has been added to your balance.", true);
+            return;
+        }
+        await new Promise((r) => setTimeout(r, 3000));
+    }
+
+    show("⏳", "Still processing",
+        "Your payment is being confirmed. Check your balance in a minute.", true);
+}
+
+checkDeposit();
+</script>
 </body>
 </html>
