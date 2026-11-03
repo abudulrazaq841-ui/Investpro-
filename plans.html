@@ -55,6 +55,8 @@
 .pm-confirm:disabled { opacity: .6; }
 .pm-success { text-align: center; padding: 10px 0; }
 .pm-success .big { font-size: 54px; }
+.pl-link { display: inline-block; margin-top: 12px; color: #f59e0b; font-size: 14px; }
+.pl-wallet .pl-btn.alt { background: #1e293b; color: #fff; }
     </style>
 </head>
 <body>
@@ -77,9 +79,27 @@
     <div class="pl-wallet" id="walletBox">
     <div>Your balance: <strong id="walletBalance">₦0</strong></div>
     <p id="depositNotice" class="pl-notice"></p>
+    
     <input type="number" id="plDepositAmount" placeholder="Deposit amount (NGN), min 1,000" min="1000">
     <button type="button" id="plDepositBtn" class="pl-btn">💳 Deposit with Flutterwave</button>
+    
+    <a href="#" id="manualToggle" class="pl-link">Or pay by bank transfer →</a>
+    
+    <div id="manualBox" style="display:none">
+        <p id="manualAccount" class="pl-notice"></p>
+        <input type="number" id="manualAmount" placeholder="Amount sent (NGN), min 1,000" min="1000">
+        <input type="text" id="manualSender" placeholder="Sender account name">
+        <button type="button" id="manualBtn" class="pl-btn alt">Submit transfer details</button>
+        <p id="manualMsg" class="pl-notice"></p>
 </div>
+    <div>Your balance: <strong id="walletBalance">₦0</strong></div>
+    <p id="depositNotice" class="pl-notice"></p>
+    <input type="number" id="plDepositAmount" placeholder="Deposit amount (NGN), min 2,000" min="2000">
+    <button type="button" id="plDepositBtn" class="pl-btn">💳 Deposit with Flutterwave</button>
+</div>
+
+
+
 
     <div id="plansContainer"><p>Please wait...</p></div>
 
@@ -150,16 +170,26 @@ async function loadWallet(userId) {
         .from("profiles").select("balance").eq("id", userId).single();
     walletBalance = Number(profile?.balance || 0);
 
-    const { count } = await supabaseClient
+    const { count: approved } = await supabaseClient
         .from("demo_deposits")
         .select("id", { count: "exact", head: true })
-        .eq("user_id", userId)
-        .eq("status", "approved");
-    hasApprovedDeposit = (count || 0) > 0;
+        .eq("user_id", userId).eq("status", "approved");
+    hasApprovedDeposit = (approved || 0) > 0;
+
+    const { count: pending } = await supabaseClient
+        .from("demo_deposits")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId).eq("status", "pending");
 
     document.getElementById("walletBalance").textContent = naira(walletBalance);
-    document.getElementById("depositNotice").textContent = hasApprovedDeposit
-        ? "" : "Make a deposit first to unlock the plans.";
+
+    let notice = "";
+    if (!hasApprovedDeposit) {
+        notice = (pending || 0) > 0
+            ? "Your deposit is waiting for approval. Plans unlock once it is approved."
+            : "Make a deposit first to unlock the plans.";
+    }
+    document.getElementById("depositNotice").textContent = notice;
 }
 
 document.getElementById("plDepositBtn").addEventListener("click", async () => {
@@ -186,6 +216,52 @@ document.getElementById("plDepositBtn").addEventListener("click", async () => {
         return;
     }
     window.location.href = data.link;
+});
+
+// EDIT: use demo details only, not a real bank account
+const MANUAL_ACCOUNT = { bank: "Demo Bank", number: "0000000000", name: "InvestPro Demo" };
+
+document.getElementById("manualAccount").textContent =
+    `Send to: ${MANUAL_ACCOUNT.bank} | ${MANUAL_ACCOUNT.number} | ${MANUAL_ACCOUNT.name}`;
+
+document.getElementById("manualToggle").addEventListener("click", (e) => {
+    e.preventDefault();
+    const box = document.getElementById("manualBox");
+    box.style.display = box.style.display === "none" ? "" : "none";
+});
+
+document.getElementById("manualBtn").addEventListener("click", async () => {
+    const amount = Number(document.getElementById("manualAmount").value);
+    const sender = document.getElementById("manualSender").value.trim();
+    const msg = document.getElementById("manualMsg");
+    const btn = document.getElementById("manualBtn");
+
+    if (!(amount >= 1000)) { msg.textContent = "Minimum deposit is ₦1,000."; return; }
+    if (!sender) { msg.textContent = "Enter the sender account name."; return; }
+
+    btn.disabled = true;
+    msg.textContent = "Submitting...";
+
+    const { data, error } = await supabaseClient.rpc("submit_manual_deposit", {
+        p_amount: amount,
+        p_sender_name: sender,
+    });
+
+    btn.disabled = false;
+
+    if (error || !data?.success) {
+        console.error(error);
+        msg.textContent = data?.message || "Unable to submit deposit.";
+        return;
+    }
+
+    msg.textContent =
+        `✅ Submitted. Reference: ${data.reference}. Your balance updates after approval.`;
+    document.getElementById("manualAmount").value = "";
+    document.getElementById("manualSender").value = "";
+
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    await loadWallet(user.id);
 });
 
 async function loadPlans() {

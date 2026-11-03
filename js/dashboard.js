@@ -792,3 +792,42 @@ setInterval(async () => {
     
     window.location.href = data.link;
 });
+
+// EDIT: use demo details only, not a real bank account
+const MANUAL_ACCOUNT = { bank: "Demo Bank", number: "0000000000", name: "InvestPro Demo" };
+
+const manualAccountEl = document.getElementById("manualAccount");
+if (manualAccountEl) {
+  manualAccountEl.textContent =
+    `Send to: ${MANUAL_ACCOUNT.bank} | ${MANUAL_ACCOUNT.number} | ${MANUAL_ACCOUNT.name}`;
+}
+
+document.getElementById("manualBtn")?.addEventListener("click", async () => {
+  const amount = Number(document.getElementById("manualAmount").value);
+  const sender = document.getElementById("manualSender").value.trim();
+  const msg = document.getElementById("manualMsg");
+  const btn = document.getElementById("manualBtn");
+
+  if (!(amount >= 1000)) { msg.textContent = "Minimum deposit is ₦1,000."; return; }
+  if (!sender) { msg.textContent = "Enter the sender account name."; return; }
+
+  btn.disabled = true;
+  msg.textContent = "Submitting...";
+
+  const { data, error } = await supabaseClient.rpc("submit_manual_deposit", {
+    p_amount: amount,
+    p_sender_name: sender,
+  });
+
+  btn.disabled = false;
+
+  if (error || !data?.success) {
+    console.error(error);
+    msg.textContent = data?.message || "Unable to submit deposit.";
+    return;
+  }
+
+  msg.textContent = `✅ Submitted. Reference: ${data.reference}. Waiting for approval.`;
+  document.getElementById("manualAmount").value = "";
+  document.getElementById("manualSender").value = "";
+});

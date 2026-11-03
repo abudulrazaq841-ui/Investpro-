@@ -1368,3 +1368,47 @@ async function deleteUser(id, email) {
 }
 
 loadAdminUsers();
+
+async function loadManualDeposits() {
+  const box = document.getElementById("adminManualDeposits");
+  if (!box) return;
+
+  const { data, error } = await supabaseClient.rpc("admin_manual_deposits");
+  if (error) { box.textContent = "Unable to load manual deposits."; console.error(error); return; }
+  if (!data || !data.length) { box.textContent = "No manual deposits yet."; return; }
+
+  box.innerHTML = "";
+  data.forEach((d) => {
+    const card = document.createElement("div");
+    card.className = "admin-withdrawal-card";
+
+    const info = document.createElement("p");
+    info.textContent =
+      `#${d.id} | ₦${Number(d.amount).toLocaleString("en-NG")} | ${d.email || "-"} | ` +
+      `Sender: ${d.sender_name || "-"} | Ref: ${d.reference} | ${d.status}`;
+    card.appendChild(info);
+
+    if (d.status === "pending") {
+      const ok = document.createElement("button");
+      ok.type = "button"; ok.className = "auth-btn"; ok.textContent = "✅ Approve";
+      ok.onclick = () => reviewManualDeposit(d.id, true);
+
+      const no = document.createElement("button");
+      no.type = "button"; no.className = "danger-btn"; no.textContent = "❌ Reject";
+      no.onclick = () => reviewManualDeposit(d.id, false);
+
+      card.append(ok, no);
+    }
+    box.appendChild(card);
+  });
+}
+
+async function reviewManualDeposit(id, approve) {
+  if (!confirm(approve ? "Approve and credit this deposit?" : "Reject this deposit?")) return;
+  const { data, error } = await supabaseClient.rpc("review_manual_deposit",
+    { p_id: id, p_approve: approve });
+  alert(error ? error.message : data?.message || "Done");
+  loadManualDeposits();
+}
+
+loadManualDeposits();
