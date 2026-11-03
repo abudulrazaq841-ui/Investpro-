@@ -10,10 +10,20 @@
 .pl-back{color:#9aa4b2;text-decoration:none;font-size:14px}
 .pl-title{text-align:center;margin:18px 0 6px;font-size:28px}
 .pl-sub{text-align:center;color:#9aa4b2;margin-bottom:22px}
+
 .pl-wallet{background:#0f172a;border:1px solid #1e293b;border-radius:20px;padding:18px;margin-bottom:20px}
 .pl-wallet input{width:100%;box-sizing:border-box;margin:10px 0;padding:12px;border-radius:12px;border:1px solid #334;background:#111c33;color:#fff}
 .pl-notice{color:#f59e0b;font-size:14px;margin:8px 0 0}
-.pl-link{display:inline-block;margin-top:12px;color:#f59e0b;font-size:14px}
+.pl-link{display:inline-block;margin-top:12px;color:#f59e0b;font-size:16px;font-weight:700}
+
+.pl-acct{background:#111c33;border:1px solid #1e293b;border-radius:14px;padding:4px 12px;margin:10px 0}
+.pl-acct-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:10px 0;border-bottom:1px solid #1e293b}
+.pl-acct-row:last-child{border-bottom:0}
+.pl-acct-row span{flex:0 0 100%;color:#9aa4b2;font-size:13px}
+.pl-acct-row strong{flex:1;min-width:0;font-size:18px;letter-spacing:.5px;word-break:normal}
+.pl-copy{background:#f59e0b;color:#111;border:0;border-radius:10px;padding:8px 12px;font-weight:700;font-size:13px;cursor:pointer}
+.pl-copy.done{background:#22c55e;color:#fff}
+
 .pl-card{position:relative;overflow:hidden;background:#0f172a;border:1px solid #1e293b;border-radius:24px;padding:22px;margin-bottom:20px}
 .pl-card.popular{border-color:#f59e0b}
 .pl-ribbon{position:absolute;top:14px;right:-34px;transform:rotate(40deg);background:#f59e0b;color:#111;font-size:11px;font-weight:700;padding:4px 40px}
@@ -26,10 +36,12 @@
 .pl-features{list-style:none;padding:0;margin:0 0 18px}
 .pl-features li{margin:8px 0;font-size:15px}
 .pl-features li::before{content:"✓ ";color:#22c55e;font-weight:700}
+
 .pl-btn{width:100%;border:0;border-radius:16px;padding:16px;font-size:17px;font-weight:700;background:#f59e0b;color:#111;cursor:pointer}
 .pl-btn.alt{background:#1e293b;color:#fff}
 .pl-btn:disabled{opacity:.6}
 .pl-risk{background:#1a1205;border:1px solid #f59e0b;border-radius:18px;padding:16px;font-size:14px;line-height:1.5;color:#fcd9a0}
+
 .pm-overlay{position:fixed;inset:0;background:rgba(2,6,18,.75);backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center;z-index:999}
 .pm-overlay.open{display:flex}
 .pm-box{position:relative;width:100%;max-width:480px;background:#0f172a;border:1px solid #1e293b;border-radius:24px 24px 0 0;padding:24px 20px 28px}
@@ -75,7 +87,20 @@
     <a href="#" id="manualToggle" class="pl-link">Or pay by bank transfer →</a>
 
     <div id="manualBox" style="display:none">
-      <p id="manualAccount" class="pl-notice"></p>
+      <div class="pl-acct">
+        <div class="pl-acct-row"><span>Bank</span><strong id="acctBank"></strong></div>
+        <div class="pl-acct-row">
+          <span>Account number</span>
+          <strong id="acctNumber"></strong>
+          <button type="button" class="pl-copy" id="copyNumber">📋 Copy</button>
+        </div>
+        <div class="pl-acct-row">
+          <span>Account name</span>
+          <strong id="acctName"></strong>
+          <button type="button" class="pl-copy" id="copyName">📋 Copy</button>
+        </div>
+      </div>
+
       <input type="number" id="manualAmount" placeholder="Amount sent (NGN), min 1,000" min="1000">
       <input type="text" id="manualSender" placeholder="Sender account name">
       <button type="button" id="manualBtn" class="pl-btn alt">Submit transfer details</button>
@@ -91,6 +116,7 @@
 <div class="pm-overlay" id="planModal">
   <div class="pm-box">
     <button type="button" class="pm-close" id="pmClose">✕</button>
+
     <div id="pmFormView">
       <div class="pm-icon" id="pmIcon">📈</div>
       <h3 id="pmTitle"></h3>
@@ -106,6 +132,7 @@
       <div class="pm-error" id="pmError"></div>
       <button type="button" class="pl-btn" id="pmConfirm">Confirm Investment</button>
     </div>
+
     <div class="pm-success" id="pmSuccessView" style="display:none">
       <div class="big">✅</div>
       <h3>Investment created</h3>
@@ -121,10 +148,13 @@
 const RISK_TEXT = "⚠️ Risk Disclosure: All investments involve risk. Returns are not guaranteed and capital is at risk.";
 document.getElementById("riskBox").textContent = RISK_TEXT;
 
-// EDIT: use demo details only, not a real bank account
+// EDIT: keep demo details only, not a real bank account, while this is a demo
 const MANUAL_ACCOUNT = { bank: "Demo Bank", number: "0000000000", name: "InvestPro Demo" };
 
-const naira = (n) => "₦" + Number(n || 0).toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const naira = (n) => "₦" + Number(n || 0).toLocaleString("en-NG", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 
 function el(tag, className, text) {
   const e = document.createElement(tag);
@@ -142,15 +172,18 @@ let walletBalance = 0;
 let hasApprovedDeposit = false;
 
 async function loadWallet(userId) {
-  const { data: profile } = await supabaseClient.from("profiles").select("balance").eq("id", userId).single();
+  const { data: profile } = await supabaseClient
+    .from("profiles").select("balance").eq("id", userId).single();
   walletBalance = Number(profile?.balance || 0);
 
   const { count: approved } = await supabaseClient.from("demo_deposits")
-    .select("id", { count: "exact", head: true }).eq("user_id", userId).eq("status", "approved");
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId).eq("status", "approved");
   hasApprovedDeposit = (approved || 0) > 0;
 
   const { count: pending } = await supabaseClient.from("demo_deposits")
-    .select("id", { count: "exact", head: true }).eq("user_id", userId).eq("status", "pending");
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId).eq("status", "pending");
 
   document.getElementById("walletBalance").textContent = naira(walletBalance);
 
@@ -163,8 +196,8 @@ async function loadWallet(userId) {
   document.getElementById("depositNotice").textContent = notice;
 }
 
-// ----- Flutterwave deposit -----
-document.getElementById("plDepositBtn").addEventListener("click", async () => {
+// ---------- Flutterwave deposit ----------
+document.getElementById("plDepositBtn")?.addEventListener("click", async () => {
   const amount = Number(document.getElementById("plDepositAmount").value);
   if (!(amount >= 1000)) return alert("Minimum deposit is ₦1,000.");
 
@@ -172,7 +205,9 @@ document.getElementById("plDepositBtn").addEventListener("click", async () => {
   btn.disabled = true;
   btn.textContent = "Opening payment...";
 
-  const { data, error } = await supabaseClient.functions.invoke("create-deposit", { body: { amount } });
+  const { data, error } = await supabaseClient.functions.invoke("create-deposit", {
+    body: { amount },
+  });
 
   if (error || !data?.link) {
     let msg = data?.error || error?.message || "Deposit failed";
@@ -188,17 +223,44 @@ document.getElementById("plDepositBtn").addEventListener("click", async () => {
   window.location.href = data.link;
 });
 
-// ----- Manual deposit -----
-document.getElementById("manualAccount").textContent =
-  `Send to: ${MANUAL_ACCOUNT.bank} | ${MANUAL_ACCOUNT.number} | ${MANUAL_ACCOUNT.name}`;
+// ---------- Manual deposit ----------
+function setText(id, value) {
+  const node = document.getElementById(id);
+  if (node) node.textContent = value;
+}
+setText("acctBank", MANUAL_ACCOUNT.bank);
+setText("acctNumber", MANUAL_ACCOUNT.number);
+setText("acctName", MANUAL_ACCOUNT.name);
 
-document.getElementById("manualToggle").addEventListener("click", (e) => {
+async function copyText(text, btn) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const t = document.createElement("textarea");
+    t.value = text;
+    document.body.appendChild(t);
+    t.select();
+    document.execCommand("copy");
+    t.remove();
+  }
+  const old = btn.textContent;
+  btn.textContent = "✅ Copied";
+  btn.classList.add("done");
+  setTimeout(() => { btn.textContent = old; btn.classList.remove("done"); }, 1500);
+}
+
+document.getElementById("copyNumber")?.addEventListener("click", (e) =>
+  copyText(MANUAL_ACCOUNT.number, e.currentTarget));
+document.getElementById("copyName")?.addEventListener("click", (e) =>
+  copyText(MANUAL_ACCOUNT.name, e.currentTarget));
+
+document.getElementById("manualToggle")?.addEventListener("click", (e) => {
   e.preventDefault();
   const box = document.getElementById("manualBox");
-  box.style.display = box.style.display === "none" ? "" : "none";
+  if (box) box.style.display = box.style.display === "none" ? "" : "none";
 });
 
-document.getElementById("manualBtn").addEventListener("click", async () => {
+document.getElementById("manualBtn")?.addEventListener("click", async () => {
   const amount = Number(document.getElementById("manualAmount").value);
   const sender = document.getElementById("manualSender").value.trim();
   const msg = document.getElementById("manualMsg");
@@ -210,7 +272,10 @@ document.getElementById("manualBtn").addEventListener("click", async () => {
   btn.disabled = true;
   msg.textContent = "Submitting...";
 
-  const { data, error } = await supabaseClient.rpc("submit_manual_deposit", { p_amount: amount, p_sender_name: sender });
+  const { data, error } = await supabaseClient.rpc("submit_manual_deposit", {
+    p_amount: amount,
+    p_sender_name: sender,
+  });
   btn.disabled = false;
 
   if (error || !data?.success) {
@@ -219,25 +284,32 @@ document.getElementById("manualBtn").addEventListener("click", async () => {
     return;
   }
 
-  msg.textContent = `✅ Submitted. Reference: ${data.reference}. Your balance updates after approval.`;
+  msg.textContent =
+    `✅ Submitted. Reference: ${data.reference}. Your balance updates after approval.`;
   document.getElementById("manualAmount").value = "";
   document.getElementById("manualSender").value = "";
 
   const { data: { user } } = await supabaseClient.auth.getUser();
-  await loadWallet(user.id);
+  if (user) await loadWallet(user.id);
 });
 
-// ----- Plans -----
+// ---------- Plans ----------
 async function loadPlans() {
   const { data: { user } } = await supabaseClient.auth.getUser();
   if (!user) { window.location.href = "login.html"; return; }
 
   await loadWallet(user.id);
 
-  const { data: plans, error } = await supabaseClient.from("investment_plans").select("*").order("min_amount", { ascending: true });
+  const { data: plans, error } = await supabaseClient
+    .from("investment_plans").select("*").order("min_amount", { ascending: true });
+
   const container = document.getElementById("plansContainer");
 
-  if (error) { container.textContent = "Error: " + error.message; console.error(error); return; }
+  if (error) {
+    container.textContent = "Error: " + error.message;
+    console.error(error);
+    return;
+  }
 
   container.innerHTML = "";
 
@@ -249,7 +321,11 @@ async function loadPlans() {
     card.appendChild(el("p", "pl-loc", plan.location || plan.description || ""));
 
     const stats = el("div", "pl-stats");
-    stats.append(stat(naira(plan.min_amount), "Min. Investment"), stat(`${plan.return_rate}%`, "Return"), stat(`${plan.duration_days} Days`, "Duration"));
+    stats.append(
+      stat(naira(plan.min_amount), "Min. Investment"),
+      stat(`${plan.return_rate}%`, "Return"),
+      stat(`${plan.duration_days} Days`, "Duration")
+    );
     card.appendChild(stats);
 
     const ul = el("ul", "pl-features");
@@ -258,14 +334,20 @@ async function loadPlans() {
 
     const locked = !hasApprovedDeposit;
     const short = walletBalance < Number(plan.min_amount);
-    const label = locked ? "🔒 Deposit to unlock"
-      : short ? `Deposit more to invest (min ${naira(plan.min_amount)})`
-      : `Invest from ${naira(plan.min_amount)}`;
+    const label = locked
+      ? "🔒 Deposit to unlock"
+      : short
+        ? `Deposit more to invest (min ${naira(plan.min_amount)})`
+        : `Invest from ${naira(plan.min_amount)}`;
 
     const btn = el("button", "pl-btn" + (plan.is_popular ? "" : " alt"), label);
     btn.type = "button";
     btn.addEventListener("click", () => {
-      if (locked || short) { document.getElementById("walletBox").scrollIntoView({ behavior: "smooth" }); return; }
+      if (locked || short) {
+        document.getElementById("walletBox")
+          .scrollIntoView({ behavior: "smooth" });
+        return;
+      }
       selectPlan(plan.id);
     });
     card.appendChild(btn);
@@ -273,7 +355,7 @@ async function loadPlans() {
   });
 }
 
-// ----- Investment popup -----
+// ---------- Investment popup ----------
 let activePlan = null;
 const planModal = document.getElementById("planModal");
 function closePlanModal() { planModal.classList.remove("open"); }
@@ -284,15 +366,19 @@ function updatePreview() {
   const box = document.getElementById("pmPreview");
   if (!(amt > 0)) { box.textContent = "Enter an amount to see your total."; return; }
   const total = amt * (1 + Number(activePlan.return_rate) / 100);
-  box.textContent = `Demo total after ${activePlan.duration_days} days: ${naira(total)} (profit ${naira(total - amt)})`;
+  box.textContent =
+    `Demo total after ${activePlan.duration_days} days: ${naira(total)} ` +
+    `(profit ${naira(total - amt)})`;
 }
 
 async function selectPlan(planId) {
   const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
   if (userError || !user) { window.location.href = "login.html"; return; }
 
-  const { data: plan, error: planError } = await supabaseClient.from("investment_plans")
-    .select("id, name, icon, location, min_amount, duration_days, return_rate").eq("id", planId).single();
+  const { data: plan, error: planError } = await supabaseClient
+    .from("investment_plans")
+    .select("id, name, icon, location, min_amount, duration_days, return_rate")
+    .eq("id", planId).single();
   if (planError || !plan) { console.error(planError); return; }
 
   await loadWallet(user.id);
@@ -313,13 +399,15 @@ async function selectPlan(planId) {
   planModal.classList.add("open");
 }
 
-document.getElementById("pmAmount").addEventListener("input", updatePreview);
-document.getElementById("pmClose").addEventListener("click", closePlanModal);
-planModal.addEventListener("click", (e) => { if (e.target === planModal) closePlanModal(); });
+document.getElementById("pmAmount")?.addEventListener("input", updatePreview);
+document.getElementById("pmClose")?.addEventListener("click", closePlanModal);
+planModal?.addEventListener("click", (e) => { if (e.target === planModal) closePlanModal(); });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") closePlanModal(); });
-document.getElementById("pmDone").addEventListener("click", () => { window.location.replace("dashboard.html"); });
+document.getElementById("pmDone")?.addEventListener("click", () => {
+  window.location.replace("dashboard.html");
+});
 
-document.getElementById("pmConfirm").addEventListener("click", async () => {
+document.getElementById("pmConfirm")?.addEventListener("click", async () => {
   if (!activePlan) return;
   const err = document.getElementById("pmError");
   const btn = document.getElementById("pmConfirm");
@@ -327,13 +415,20 @@ document.getElementById("pmConfirm").addEventListener("click", async () => {
   err.textContent = "";
 
   if (!Number.isFinite(amt) || amt <= 0) { err.textContent = "Enter a valid amount."; return; }
-  if (amt < Number(activePlan.min_amount)) { err.textContent = `Minimum for this plan is ${naira(activePlan.min_amount)}.`; return; }
-  if (amt > walletBalance) { err.textContent = `Insufficient balance. You have ${naira(walletBalance)}. Please deposit more.`; return; }
+  if (amt < Number(activePlan.min_amount)) {
+    err.textContent = `Minimum for this plan is ${naira(activePlan.min_amount)}.`; return;
+  }
+  if (amt > walletBalance) {
+    err.textContent = `Insufficient balance. You have ${naira(walletBalance)}. Please deposit more.`; return;
+  }
 
   btn.disabled = true;
   btn.textContent = "Processing...";
 
-  const { data: result, error } = await supabaseClient.rpc("create_demo_investment", { p_plan_id: activePlan.id, p_amount: amt });
+  const { data: result, error } = await supabaseClient.rpc("create_demo_investment", {
+    p_plan_id: activePlan.id,
+    p_amount: amt,
+  });
 
   if (error || !result?.success) {
     console.error(error);
@@ -343,17 +438,20 @@ document.getElementById("pmConfirm").addEventListener("click", async () => {
     return;
   }
 
-  const { error: refErr } = await supabaseClient.rpc("complete_demo_referral", { p_investment_amount: amt });
+  const { error: refErr } = await supabaseClient.rpc("complete_demo_referral", {
+    p_investment_amount: amt,
+  });
   if (refErr) console.error("Referral bonus error:", refErr);
 
-  document.getElementById("pmSuccessText").textContent = `${activePlan.name}: ${naira(amt)} invested.`;
+  document.getElementById("pmSuccessText").textContent =
+    `${activePlan.name}: ${naira(amt)} invested.`;
   document.getElementById("pmFormView").style.display = "none";
   document.getElementById("pmSuccessView").style.display = "";
   btn.disabled = false;
   btn.textContent = "Confirm Investment";
 });
 
-document.getElementById("logoutBtn").addEventListener("click", async (e) => {
+document.getElementById("logoutBtn")?.addEventListener("click", async (e) => {
   e.preventDefault();
   await supabaseClient.auth.signOut();
   window.location.href = "login.html";
