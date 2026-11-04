@@ -88,7 +88,7 @@ await updateUserInvestments();
 const { data: profile, error: profileError } =  
     await supabaseClient  
         .from("profiles")  
-        .select("email, balance, total_invested")  
+        .select("email, full_name, balance, total_invested")  
         .eq("id", user.id)  
         .single();  
 
@@ -102,9 +102,15 @@ if (profileError) {
 }  
 
 // Welcome message  
-document.getElementById("welcomeMessage").textContent =  
-    `Welcome, ${profile.email || user.email || "User"}!`;  
+const displayName = (
+    profile.full_name ||
+    user.user_metadata?.full_name ||
+    user.user_metadata?.name ||
+    (profile.email || user.email || "User").split("@")[0]
+).trim();
 
+document.getElementById("welcomeMessage").textContent =
+    `Welcome, ${displayName}!`;
 // Balance  
 document.getElementById("balance").textContent =  
     `₦${Number(profile.balance || 0).toLocaleString("en-NG", {  

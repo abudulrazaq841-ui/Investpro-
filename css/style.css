@@ -3643,3 +3643,4 @@ header nav{display:flex;flex-wrap:wrap;gap:8px 16px}
 @media (max-height:480px) and (orientation:landscape){
   .auth-section{align-items:flex-start;padding-top:12px}
 }
+#welcomeMessage{overflow-wrap:anywhere;word-break:break-word}
