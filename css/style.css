@@ -3591,11 +3591,55 @@ a{color:#f59e0b}
 @media (min-width:768px){
   .auth-page section{align-items:center;min-height:calc(100vh - 90px)}
 }
+
+/* ===== Responsive login and signup ===== */
+.auth-section,
+.auth-section *{box-sizing:border-box}
+
+.auth-section{
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  width:100%;
+  padding:clamp(16px,5vw,48px) clamp(12px,4vw,24px);
+}
+
+.auth-box{
+  width:100%;
+  max-width:460px;
+  margin:0 auto;
+  padding:clamp(18px,5vw,36px);
+}
+
+.auth-box h1{font-size:clamp(24px,7vw,34px);line-height:1.2}
+.auth-box p{font-size:clamp(14px,3.8vw,16px)}
+
+.auth-box .form-group{width:100%}
+.auth-box input,
+.auth-box .auth-btn{
+  width:100%;
+  min-height:48px;
+  font-size:16px;   /* stops phones zooming in on tap */
+}
+
+body{overflow-x:hidden}
+img{max-width:100%;height:auto}
+
+/* header wraps instead of overflowing */
+header{flex-wrap:wrap;gap:8px 16px}
+header nav{display:flex;flex-wrap:wrap;gap:8px 16px}
+
+/* tablets and desktops: card centered vertically */
+@media (min-width:768px){
+  .auth-section{align-items:center;min-height:calc(100vh - 160px)}
+}
+
 /* very small phones */
 @media (max-width:360px){
-  .auth-page section > div{padding:16px}
+  .auth-box{padding:16px}
 }
+
 /* phone turned sideways */
 @media (max-height:480px) and (orientation:landscape){
-  .auth-page section{align-items:flex-start;padding-top:12px}
+  .auth-section{align-items:flex-start;padding-top:12px}
 }
