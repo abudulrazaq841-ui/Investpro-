@@ -3566,4 +3566,36 @@ ul{margin-left:18px}
 a{color:#f59e0b}
 .back{color:#9ca3af;text-decoration:none;font-size:14px}
 
+.auth-page{min-height:100vh;min-height:100dvh;overflow-x:hidden}
+.auth-page *{box-sizing:border-box}
+.auth-page img{max-width:100%;height:auto}
 
+/* header and menu wrap instead of overflowing */
+.auth-page header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;padding:12px clamp(12px,4vw,32px)}
+.auth-page header nav{display:flex;flex-wrap:wrap;gap:8px 16px}
+
+/* the form area */
+.auth-page section{display:flex;justify-content:center;align-items:flex-start;padding:clamp(16px,5vw,48px) clamp(12px,4vw,24px)}
+.auth-page section > div{width:min(100%,460px);padding:clamp(18px,5vw,36px)}
+
+/* text scales with the screen */
+.auth-page h1,.auth-page h2{font-size:clamp(24px,7vw,34px);line-height:1.2}
+.auth-page p{font-size:clamp(14px,3.8vw,16px)}
+
+/* inputs and buttons: full width, easy to tap, no zoom on phones */
+.auth-page input:not([type=checkbox]):not([type=radio]),
+.auth-page button,
+.auth-page select{width:100%;min-height:48px;font-size:16px}
+
+/* large screens: center the card vertically */
+@media (min-width:768px){
+  .auth-page section{align-items:center;min-height:calc(100vh - 90px)}
+}
+/* very small phones */
+@media (max-width:360px){
+  .auth-page section > div{padding:16px}
+}
+/* phone turned sideways */
+@media (max-height:480px) and (orientation:landscape){
+  .auth-page section{align-items:flex-start;padding-top:12px}
+}
