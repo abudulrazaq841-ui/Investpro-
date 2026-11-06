@@ -3827,3 +3827,49 @@ header nav a:last-child{
   border-radius:14px;
 }
 .wd-history:hover{border-color:#f59e0b}
+/* ===== Fit the phone screen ===== */
+html,body{max-width:100%;overflow-x:hidden}
+*,*::before,*::after{box-sizing:border-box}
+img,svg,video{max-width:100%;height:auto}
+
+/* header: one compact row, no longer covers the content */
+@media (max-width:720px){
+  header{position:static;padding:10px 12px;gap:8px}
+  header nav{
+    display:grid;
+    grid-auto-flow:column;
+    grid-auto-columns:1fr;
+    gap:6px;
+    width:100%;
+  }
+  header nav a{
+    min-width:0;
+    min-height:40px;
+    padding:8px 4px;
+    font-size:13px;
+  }
+}
+
+/* referral card */
+#referralCode{
+  font-size:clamp(18px,6vw,26px);
+  letter-spacing:1px;
+  overflow-wrap:anywhere;
+}
+#referralLink{
+  display:block;
+  width:100%;
+  min-height:48px;
+  padding:0 14px;
+  font-size:14px;
+  color:#fff;
+  background:#111c33;
+  border:1px solid #243047;
+  border-radius:14px;
+  text-overflow:ellipsis;
+}
+
+/* share buttons: two across, "Share…" below */
+.share-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.share-btn.more{grid-column:1 / -1}
+.share-btn{min-width:0}
