@@ -75,8 +75,8 @@
 <div class="pl-wrap">
   <a class="pl-back" href="dashboard.html">← Dashboard</a>
   <h2 class="pl-title">Investment Plans</h2>
-  <p class="pl-sub">Choose a plan that fits your budget.</p>
-
+  <p class="pl-sub">Choose a plan that fits your budget. <strong>10% fees will be charged when you deposit with flutterWave but 0% fees will be charge when you deposit with bank transfer</strong></p>
+  
   <div class="pl-wallet" id="walletBox">
     <div>Your balance: <strong id="walletBalance">₦0</strong></div>
     <p id="depositNotice" class="pl-notice"></p>
@@ -149,7 +149,7 @@ const RISK_TEXT = "⚠️ Risk Disclosure: All investments involve risk. Returns
 document.getElementById("riskBox").textContent = RISK_TEXT;
 
 // EDIT: keep demo details only, not a real bank account, while this is a demo
-const MANUAL_ACCOUNT = { bank: "Opay", number: "9017748158", name: "InvestPro Demo OR Maryam jumai omeh" };
+const MANUAL_ACCOUNT = { bank: "Opay", number: "9017748158", name: "InvestPro OR Maryam jumai omeh" };
 
 const naira = (n) => "₦" + Number(n || 0).toLocaleString("en-NG", {
   minimumFractionDigits: 2,

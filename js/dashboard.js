@@ -778,26 +778,7 @@ setInterval(async () => {
     //deposit function//
     //_-_-_-_-_-_-_-_-//
     
-   document.getElementById("depositBtn").addEventListener("click", async () => {
-    const amount = Number(document.getElementById("depositAmount").value);
-    if (!(amount > 0)) return alert("Enter a valid amount");
-    
-    const { data, error } = await supabaseClient.functions.invoke("create-deposit", {
-        body: { amount },
-    });
-    
-    if (error) {
-        let msg = error.message;
-        try {
-            const text = await error.context.text();
-            try { msg = JSON.parse(text).error || text; } catch { msg = text; }
-        } catch {}
-        return alert("Deposit error: " + msg);
-    }
-    if (!data?.link) return alert(data?.error || "Deposit failed");
-    
-    window.location.href = data.link;
-});
+   
 
 // EDIT: use demo details only, not a real bank account
 const MANUAL_ACCOUNT = { bank: "Demo Bank", number: "0000000000", name: "InvestPro Demo" };
@@ -836,4 +817,74 @@ document.getElementById("manualBtn")?.addEventListener("click", async () => {
   msg.textContent = `✅ Submitted. Reference: ${data.reference}. Waiting for approval.`;
   document.getElementById("manualAmount").value = "";
   document.getElementById("manualSender").value = "";
+});
+// =========================
+// SHARE REFERRAL LINK
+// =========================
+function getReferralLink() {
+    const input = document.getElementById("referralLink");
+    const link = input ? input.value.trim() : "";
+    if (!link || link.toLowerCase().startsWith("loading")) {
+        alert("Your referral link is still loading. Try again in a moment.");
+        return null;
+    }
+    return link;
+}
+const SHARE_TEXT = `🚀 WELCOME TO INVESTPRO!
+🔞 Approved by government for APC 
+
+Your opportunity to explore a smarter way of managing investments starts here.
+
+InvestPro brings together a modern digital investment experience, demonstration investment plans, an intuitive dashboard, and a referral programme.
+ 🔞 ÀBOUT INVESTPRO 
+ this platform was improved by 
+ Enugu government for election campaign 
+
+💎 EXPLORE INVESTPRO:
+
+📊 Investment Plans – Explore different plans, durations and displayed returns.
+
+💰 Personal Dashboard – Monitor your demo balance and account activities.
+
+📈 Investment Tracking – Follow your demonstration investments.
+
+🤝 Referral Programme – Invite friends using your unique referral link.
+
+🔐 Account Management – Enjoy a simple registration and dashboard experience.
+
+🌟 Discover how modern digital investment platforms work.
+
+🔥 CREATE YOUR FREE INVESTMENT ACCOUNT TODAY!
+
+Join InvestPro using my personal referral link:`;
+document.getElementById("shareWhatsApp")?.addEventListener("click", () => {
+    const link = getReferralLink();
+    if (!link) return;
+    const url = "https://wa.me/?text=" + encodeURIComponent(SHARE_TEXT + " " + link);
+    window.open(url, "_blank", "noopener");
+});
+
+document.getElementById("shareFacebook")?.addEventListener("click", () => {
+    const link = getReferralLink();
+    if (!link) return;
+    const url = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(link);
+    window.open(url, "_blank", "noopener");
+});
+
+document.getElementById("shareMore")?.addEventListener("click", async () => {
+    const link = getReferralLink();
+    if (!link) return;
+
+    if (navigator.share) {
+        try {
+            await navigator.share({ title: "InvestPro", text: SHARE_TEXT, url: link });
+        } catch (e) { /* user closed the share menu */ }
+    } else {
+        try {
+            await navigator.clipboard.writeText(link);
+            alert("Link copied. Paste it anywhere to share.");
+        } catch {
+            alert("Copy this link: " + link);
+        }
+    }
 });

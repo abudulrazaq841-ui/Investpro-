@@ -3644,3 +3644,186 @@ header nav{display:flex;flex-wrap:wrap;gap:8px 16px}
   .auth-section{align-items:flex-start;padding-top:12px}
 }
 #welcomeMessage{overflow-wrap:anywhere;word-break:break-word}
+/* ===== HEADER + NAV BUTTONS (CSS only) ===== */
+header{
+  position:sticky;
+  top:0;
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px 14px;
+  padding:12px clamp(12px,4vw,32px);
+  background:rgba(8,12,24,.94);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid #1e293b;
+}
+
+header .logo{
+  font-size:clamp(22px,6vw,28px);
+  font-weight:800;
+  color:#fff;
+}
+
+header nav{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px;
+}
+
+header nav a{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:10px 18px;
+  min-height:42px;
+  border-radius:999px;
+  background:#111c33;
+  border:1px solid #1e293b;
+  color:#e5e7eb;
+  font-size:15px;
+  font-weight:600;
+  text-decoration:none;
+  white-space:nowrap;
+  transition:background .2s, border-color .2s, transform .1s;
+}
+
+header nav a:hover{
+  background:#1e293b;
+  border-color:#3b82f6;
+}
+
+header nav a:active{
+  transform:scale(.96);
+}
+
+/* last link (Logout / Login / Sign Up) uses the gradient */
+header nav a:last-child{
+  background:linear-gradient(90deg,#5eead4,#4facfe);
+  border-color:transparent;
+  color:#0b1324;
+}
+
+/* phones: buttons share the row and wrap if the screen is narrow */
+@media (max-width:720px){
+  header nav{
+    width:100%;
+    gap:6px;
+  }
+  header nav a{
+    flex:1 1 auto;
+    padding:10px 12px;
+    font-size:14px;
+  }
+}
+.share-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.share-btn{
+  flex:1 1 30%;
+  min-height:46px;
+  padding:10px 12px;
+  border:0;
+  border-radius:999px;
+  font-size:15px;
+  font-weight:700;
+  color:#fff;
+  cursor:pointer;
+}
+.share-btn.wa{background:#25d366;color:#06240f}
+.share-btn.fb{background:#1877f2}
+.share-btn.more{background:#1e293b;border:1px solid #334155}
+.share-btn:active{transform:scale(.96)}
+/* ===== Withdrawal card ===== */
+.wd-card{
+  width:min(100%,520px);
+  margin:24px auto;
+  padding:clamp(18px,5vw,28px);
+  background:#0f172a;
+  border:1px solid #1e293b;
+  border-radius:24px;
+  box-sizing:border-box;
+}
+.wd-card *{box-sizing:border-box}
+
+.wd-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.wd-icon{
+  flex:0 0 52px;
+  width:52px;height:52px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;
+  background:#111c33;
+  border-radius:16px;
+}
+.wd-head h3{margin:0;font-size:22px;color:#fff}
+.wd-head p{margin:2px 0 0;font-size:14px;color:#9aa4b2}
+
+.wd-field{margin-bottom:14px}
+.wd-field label{
+  display:block;
+  margin-bottom:6px;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.8px;
+  text-transform:uppercase;
+  color:#8b95a7;
+}
+.wd-field input,
+.wd-field select{
+  width:100%;
+  min-height:50px;
+  padding:0 14px;
+  font-size:16px;
+  color:#fff;
+  background:#111c33;
+  border:1px solid #243047;
+  border-radius:14px;
+  outline:none;
+  appearance:none;
+  -webkit-appearance:none;
+}
+.wd-field select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239aa4b2' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 14px center;
+  padding-right:40px;
+}
+.wd-field select option{background:#0f172a;color:#fff}
+.wd-field input::placeholder{color:#5f6b7f}
+.wd-field input:focus,
+.wd-field select:focus{
+  border-color:#f59e0b;
+  box-shadow:0 0 0 3px rgba(245,158,11,.15);
+}
+
+.wd-btn{
+  width:100%;
+  min-height:54px;
+  margin-top:6px;
+  border:0;
+  border-radius:16px;
+  font-size:17px;
+  font-weight:700;
+  color:#111;
+  background:#f59e0b;
+  cursor:pointer;
+}
+.wd-btn:active{transform:scale(.98)}
+.wd-btn:disabled{opacity:.6}
+
+.wd-message{min-height:20px;margin:12px 0 0;font-size:14px;color:#f59e0b}
+.wd-note{margin:14px 0 0;font-size:13px;color:#7c8799;line-height:1.5}
+
+.wd-history{
+  display:block;
+  margin-top:16px;
+  padding:13px;
+  text-align:center;
+  font-weight:700;
+  color:#f59e0b;
+  text-decoration:none;
+  background:#111c33;
+  border:1px solid #243047;
+  border-radius:14px;
+}
+.wd-history:hover{border-color:#f59e0b}

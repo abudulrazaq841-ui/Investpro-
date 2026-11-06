@@ -41,7 +41,7 @@
             </h1>
 
             <p>
-                Track your demo investment portfolio and progress.
+                📈Track your investment portfolio and progress.📉
             </p>
         </div>
 
@@ -56,14 +56,15 @@
    <section class="balance-card">
 
     <div>
-        <span>DEMO PORTFOLIO BALANCE</span>
+        <span>📈INVESTMENT PORTFOLIO BALANCE📉</span>
 
         <h2 id="balance">
             ₦0.00
         </h2>
 
         <p class="balance-note">
-            This balance is for demonstration purposes only.
+          <strong>Your Dashboard Shows Demo Balance Until You Deposit
+This balance is for demonstration purposes only. Your real balance updates immediately after your first verified deposit.</strong>
         </p>
     </div>
 
@@ -159,8 +160,8 @@
             <div>
                 <h3>Share InvestPro</h3>
                 <p>
-                    Invite friends using your personal
-                    referral link.
+                  🎉  Invite friends using your personal
+                    referral link and get massive bonus when they sign up and invest🎊.
                 </p>
             </div>
 
@@ -203,6 +204,12 @@
                 </button>
 
             </div>
+            <h3><strong>💰Invite to earn using WhatsApp or Facebook💰 </strong></h3>
+            <div class="share-row">
+    <button type="button" class="share-btn wa" id="shareWhatsApp">WhatsApp</button>
+    <button type="button" class="share-btn fb" id="shareFacebook">Facebook</button>
+    <button type="button" class="share-btn more" id="shareMore">Share…</button>
+</div>
 
         </div>
 
@@ -234,7 +241,7 @@
                 </div>
 
                 <div>
-                    <span>Demo Bonuses Earned</span>
+                    <span>investment Bonuses Earned</span>
 
                     <strong id="referralBonus">
                         ₦0.00
@@ -255,12 +262,12 @@
             <div class="bonus-content">
 
                 <strong>
-                    ₦500 Demo Referral Bonus
+                    ₦500 investpro Referral Bonus
                 </strong>
 
                 <p>
-                    Earn a demo bonus when a person you
-                    referred completes a qualifying demo
+                    Earn a investpro bonus when a person you
+                    referred completes a qualifying 
                     investment.
                 </p>
 
@@ -285,7 +292,7 @@
                     <div>
                         <strong>Share your link</strong>
                         <p>
-                            Copy and send your referral
+                           ©️ Copy and send your referral
                             link to a friend.
                         </p>
                     </div>
@@ -302,7 +309,7 @@
                     <div>
                         <strong>Friend signs up</strong>
                         <p>
-                            Your friend creates a demo
+                          📥  Your friend creates an 
                             InvestPro account through your link.
                         </p>
                     </div>
@@ -317,9 +324,9 @@
                     </div>
 
                     <div>
-                        <strong>Demo bonus</strong>
+                        <strong>investment bonus</strong>
                         <p>
-                            A qualifying demo investment
+                         💯   A qualifying  investment
                             completes the referral.
                         </p>
                     </div>
@@ -333,43 +340,81 @@
     <!-- =========================
      DEMO DEPOSIT
 ========================= -->
-<div id="money-section">
-  <h3>Deposit</h3>
-  <input type="number" id="depositAmount" placeholder="Amount (NGN)" min="1">
-  <button id="depositBtn">Deposit</button>
 
 
-<div id="withdrawal-section">
-    <h3>Withdraw</h3>
+<div class="wd-card" id="withdrawal-section">
+    <div class="wd-head">
+        <div class="wd-icon">💸</div>
+        <div>
+            <h3>Withdraw</h3>
+            <p><strong>📤🏦Request a withdrawal to your bank account.</strong></p>
+        </div>
+    </div>
+
     <form id="withdrawalForm" onsubmit="submitDemoWithdrawal(event)">
-        <input type="number" id="withdrawalAmount" placeholder="Amount (NGN), min 2,000" min="2000">
-        
-        <select id="withdrawalBank">
-            <option value="">Select bank</option>
-            <option>Access Bank</option>
-            <option>Guaranty Trust Bank</option>
-            <option>First Bank of Nigeria</option>
-            <option>United Bank For Africa</option>
-            <option>Zenith Bank</option>
-            <option>Fidelity Bank</option>
-            <option>Union Bank of Nigeria</option>
-            <option>Sterling Bank</option>
-            <option>Stanbic IBTC Bank</option>
-            <option>Wema Bank</option>
-            <option>Polaris Bank</option>
-            <option>Ecobank Nigeria</option>
-            <option>Opay</option>
-        </select>
-        
-        <input type="text" id="withdrawalAccountName" placeholder="Account name">
-        <input type="text" id="withdrawalAccountNumber" placeholder="Account number (10 digits)" maxlength="10">
-        
-        <button type="submit" id="withdrawalBtn">💸 Request Demo Withdrawal</button>
-        <p id="withdrawalMessage"></p>
-    </form>
-</div>
 
-<a href="deposit-history.html">View deposit &amp; withdrawal history →</a>
+        <div class="wd-field">
+            <label for="withdrawalAmount">Amount (NGN)</label>
+            <input type="number" id="withdrawalAmount" inputmode="numeric"
+                   placeholder="Minimum ₦2,000" min="2000">
+        </div>
+
+        <div class="wd-field">
+            <label for="withdrawalBank">Bank</label>
+           <select id="withdrawalBank">
+    <option value="">Select bank</option>
+    <option value="Access Bank">Access Bank</option>
+    <option value="Citibank Nigeria">Citibank Nigeria</option>
+    <option value="Ecobank Nigeria">Ecobank Nigeria</option>
+    <option value="Fidelity Bank">Fidelity Bank</option>
+    <option value="First Bank of Nigeria">First Bank of Nigeria</option>
+    <option value="First City Monument Bank">First City Monument Bank (FCMB)</option>
+    <option value="Globus Bank">Globus Bank</option>
+    <option value="Guaranty Trust Bank">Guaranty Trust Bank (GTBank)</option>
+    <option value="Heritage Bank">Heritage Bank</option>
+    <option value="Jaiz Bank">Jaiz Bank</option>
+    <option value="Keystone Bank">Keystone Bank</option>
+    <option value="Polaris Bank">Polaris Bank</option>
+    <option value="Providus Bank">Providus Bank</option>
+    <option value="Stanbic IBTC Bank">Stanbic IBTC Bank</option>
+    <option value="Standard Chartered Bank">Standard Chartered Bank</option>
+    <option value="Sterling Bank">Sterling Bank</option>
+    <option value="Titan Trust Bank">Titan Trust Bank</option>
+    <option value="Union Bank of Nigeria">Union Bank of Nigeria</option>
+    <option value="United Bank For Africa">United Bank For Africa (UBA)</option>
+    <option value="Unity Bank">Unity Bank</option>
+    <option value="Wema Bank">Wema Bank</option>
+    <option value="Zenith Bank">Zenith Bank</option>
+    <option value="Opay">OPay</option>
+    <option value="PalmPay">PalmPay</option>
+    <option value="Kuda">Kuda Bank</option>
+    <option value="Moniepoint">Moniepoint</option>
+    <option value="VFD Microfinance Bank">VFD Microfinance Bank</option>
+</select>
+        </div>
+
+        <div class="wd-field">
+            <label for="withdrawalAccountName">Account name</label>
+            <input type="text" id="withdrawalAccountName" placeholder="Name on the account">
+        </div>
+
+        <div class="wd-field">
+            <label for="withdrawalAccountNumber">Account number</label>
+            <input type="text" id="withdrawalAccountNumber" inputmode="numeric"
+                   maxlength="10" placeholder="10 digits">
+        </div>
+
+        <button type="submit" id="withdrawalBtn" class="wd-btn">
+            💸 Request Withdrawal
+        </button>
+
+        <p id="withdrawalMessage" class="wd-message"></p>
+    </form>
+
+    <p class="wd-note">Withdrawals are reviewed before they are paid. You need at least 3 referrals to withdraw.</p>
+
+    <a href="deposit-history.html" class="wd-history">View deposit &amp; withdrawal history →</a>
+</div>
 
 </main>
 <!-- Investment Details Modal -->
@@ -387,7 +432,7 @@
         <h2 id="modalPlanName">Investment Details</h2>
 
         <p id="modalDescription">
-            Demo investment information
+            ℹ️ investment information
         </p>
 
         <div class="modal-details">
@@ -403,12 +448,12 @@
             </div>
 
             <div>
-                <span>Demo Return Rate</span>
+                <span>investment Return Rate</span>
                 <strong id="modalReturnRate">0%</strong>
             </div>
 
             <div>
-                <span>Estimated Demo Return</span>
+                <span>🔄Estimated investment Return</span>
                 <strong id="modalDemoReturn">₦0.00</strong>
             </div>
 
