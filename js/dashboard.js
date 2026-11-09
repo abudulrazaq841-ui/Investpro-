@@ -112,11 +112,11 @@ const displayName = (
 document.getElementById("welcomeMessage").textContent =
     `Welcome, ${displayName}!`;
 // Balance  
-document.getElementById("balance").textContent =  
-    `₦${Number(profile.balance || 0).toLocaleString("en-NG", {  
-        minimumFractionDigits: 2  
-    })}`;  
-
+document.getElementById("balance").textContent =
+    `₦${Number(profile.balance || 0).toLocaleString("en-NG", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    })}`;
 // Load user's demo investments  
 const { data: investments, error: investmentError } =  
     await supabaseClient  
@@ -781,7 +781,6 @@ setInterval(async () => {
    
 
 // EDIT: use demo details only, not a real bank account
-const MANUAL_ACCOUNT = { bank: "Demo Bank", number: "0000000000", name: "InvestPro Demo" };
 
 const manualAccountEl = document.getElementById("manualAccount");
 if (manualAccountEl) {
@@ -888,3 +887,171 @@ document.getElementById("shareMore")?.addEventListener("click", async () => {
         }
     }
 });
+
+// ===== POPUPS: DEPOSIT + WITHDRAW =====
+// keep placeholder details while this is a demo
+const MANUAL_ACCOUNT = { bank: "Opay", number: "9017748158", name: "InvestPro(optional) OR Maryam Jumai Omeh" };
+
+const BANKS = ["Access Bank","Citibank Nigeria","Ecobank Nigeria","Fidelity Bank","First Bank of Nigeria",
+  "First City Monument Bank","Globus Bank","Guaranty Trust Bank","Heritage Bank","Jaiz Bank","Keystone Bank",
+  "Polaris Bank","Providus Bank","Stanbic IBTC Bank","Standard Chartered Bank","Sterling Bank","Titan Trust Bank",
+  "Union Bank of Nigeria","United Bank For Africa","Unity Bank","Wema Bank","Zenith Bank","Opay","PalmPay",
+  "Kuda","Moniepoint","VFD Microfinance Bank"];
+
+const bankSelect = document.getElementById("withdrawalBank");
+if (bankSelect && bankSelect.options.length <= 1) {
+  BANKS.forEach((b) => bankSelect.add(new Option(b, b)));
+}
+
+function openModal(id) {
+  document.getElementById(id)?.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeModals() {
+  document.querySelectorAll(".md-overlay.open").forEach((m) => m.classList.remove("open"));
+  document.body.style.overflow = "";
+}
+
+document.getElementById("openDeposit")?.addEventListener("click", () => openModal("depositModal"));
+document.getElementById("openWithdraw")?.addEventListener("click", () => openModal("withdrawModal"));
+document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", closeModals));
+document.querySelectorAll(".md-overlay").forEach((o) =>
+  o.addEventListener("click", (e) => { if (e.target === o) closeModals(); }));
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModals(); });
+
+// tabs
+document.querySelectorAll(".md-tab").forEach((tab) =>
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".md-tab").forEach((t) => t.classList.toggle("active", t === tab));
+    document.getElementById("tabCard").style.display = tab.dataset.tab === "card" ? "" : "none";
+    document.getElementById("tabBank").style.display = tab.dataset.tab === "bank" ? "" : "none";
+  }));
+
+// Flutterwave deposit
+document.getElementById("mdDepBtn")?.addEventListener("click", async () => {
+  const amount = Number(document.getElementById("mdDepAmount").value);
+  if (!(amount >= 2000)) return alert("Minimum deposit is ₦2,000.");
+
+  const btn = document.getElementById("mdDepBtn");
+  btn.disabled = true;
+  btn.textContent = "Opening payment...";
+
+  const { data, error } = await supabaseClient.functions.invoke("create-deposit", { body: { amount } });
+
+  if (error || !data?.link) {
+    let msg = data?.error || error?.message || "Deposit failed Try manual deposit ℹ️";
+    try {
+      const t = await error.context.text();
+      try { msg = JSON.parse(t).error || t; } catch { msg = t; }
+    } catch {}
+    alert("Deposit error: " + msg);
+    btn.disabled = false;
+    btn.textContent = "Pay with Flutterwave";
+    return;
+  }
+  window.location.href = data.link;
+});
+
+// bank transfer details + copy buttons
+function setTxt(id, v) { const n = document.getElementById(id); if (n) n.textContent = v; }
+setTxt("mdAcctBank", MANUAL_ACCOUNT.bank);
+setTxt("mdAcctNumber", MANUAL_ACCOUNT.number);
+setTxt("mdAcctName", MANUAL_ACCOUNT.name);
+
+async function copyValue(text, btn) {
+  try { await navigator.clipboard.writeText(text); }
+  catch {
+    const t = document.createElement("textarea");
+    t.value = text; document.body.appendChild(t); t.select();
+    document.execCommand("copy"); t.remove();
+  }
+  const old = btn.textContent;
+  btn.textContent = "✅ Copied";
+  btn.classList.add("done");
+  setTimeout(() => { btn.textContent = old; btn.classList.remove("done"); }, 1500);
+}
+document.getElementById("mdCopyNumber")?.addEventListener("click", (e) => copyValue(MANUAL_ACCOUNT.number, e.currentTarget));
+document.getElementById("mdCopyName")?.addEventListener("click", (e) => copyValue(MANUAL_ACCOUNT.name, e.currentTarget));
+
+// manual deposit submit
+document.getElementById("mdManBtn")?.addEventListener("click", async () => {
+  const amount = Number(document.getElementById("mdManAmount").value);
+  const sender = document.getElementById("mdManSender").value.trim();
+  const msg = document.getElementById("mdManMsg");
+  const btn = document.getElementById("mdManBtn");
+
+  if (!(amount >= 1000)) { msg.textContent = "Minimum deposit is ₦1,000."; return; }
+  if (!sender) { msg.textContent = "Enter the sender account name."; return; }
+
+  btn.disabled = true;
+  msg.textContent = "Submitting...";
+  const { data, error } = await supabaseClient.rpc("submit_manual_deposit", { p_amount: amount, p_sender_name: sender });
+  btn.disabled = false;
+
+  if (error || !data?.success) {
+    msg.textContent = data?.message || "Unable to submit deposit.";
+    return;
+  }
+  msg.textContent = `✅ Submitted. Reference: ${data.reference}. Your balance updates after approval.`;
+  document.getElementById("mdManAmount").value = "";
+  document.getElementById("mdManSender").value = "";
+});
+// ===== TOP CARD =====
+// ===== INVITE POPUP =====
+document.getElementById("goReferral")?.addEventListener("click", () => {
+  openModal("referralModal");
+  loadReferralInfo();   // refresh code, link and stats each time it opens
+});
+
+document.getElementById("copyReferralBtn")?.addEventListener("click", async (e) => {
+  const link = document.getElementById("referralLink")?.value || "";
+  if (!link || link.toLowerCase().startsWith("loading")) return;
+  const btn = e.currentTarget;
+  try { await navigator.clipboard.writeText(link); }
+  catch {
+    const input = document.getElementById("referralLink");
+    input.select(); document.execCommand("copy");
+  }
+  const old = btn.textContent;
+  btn.textContent = "✅ Copied";
+  setTimeout(() => { btn.textContent = old; }, 1500);
+});
+
+// ===== TOP CARD STATS =====
+const fmtNaira = (n) =>
+  "₦" + Number(n || 0).toLocaleString("en-NG", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+async function fillTopStats() {
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) return;
+
+  // Demo Returns = total earned on the user's investments
+  const { data: inv } = await supabaseClient
+    .from("investments")
+    .select("demo_earned")
+    .eq("user_id", user.id);
+
+  const returns = (inv || []).reduce((s, i) => s + Number(i.demo_earned || 0), 0);
+
+  // Referral Bonus = bonuses from completed referrals
+  const { data: refs } = await supabaseClient
+    .from("referrals")
+    .select("bonus_amount, status")
+    .eq("referrer_id", user.id);
+
+  const bonus = (refs || []).reduce((s, r) => s + Number(r.bonus_amount || 0), 0);
+
+  const set = (id, v) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = fmtNaira(v);
+  };
+
+  set("demoReturns", returns);
+  set("topReferralBonus", bonus);
+  set("taskEarnings", 0); // no tasks feature yet
+}
+
+fillTopStats();

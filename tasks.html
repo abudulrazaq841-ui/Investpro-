@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Earn Rewards - InvestPro</title>
+
+    <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/tasks.css">
+
+    
+</head>
+
+<body class="tasks-page">
+
+    <main>
+
+        <div class="rewards-header">
+
+            <h2>InvestPro Rewards Center</h2>
+
+            <p>
+                Complete promotional social media tasks
+                and earn demo reward credits.
+            </p>
+
+            <div class="reward-balance">
+                ₦<span id="rewardsBalance">0.00</span>
+            </div>
+
+            <p>My Rewards Balance</p>
+
+            <hr>
+
+            <p>
+                Completed Tasks:
+                <strong id="completedTasks">0</strong>/3
+            </p>
+
+        </div>
+
+        <h2>Available Social Tasks</h2>
+
+        <p>
+            Complete the available tasks and submit
+            your proof for administrator review.
+        </p>
+
+        <div id="taskMessage"></div>
+
+        <div id="tasksContainer">
+            Loading available tasks...
+        </div>
+
+    </main>
+
+    <!-- Supabase library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Existing InvestPro connection -->
+    <script src="js/supabase.js"></script>
+
+    <!-- New social task functionality -->
+    <script src="js/social-tasks.js"></script>
+
+</body>
+
+</html>

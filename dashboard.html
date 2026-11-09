@@ -2,29 +2,28 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
                 
     <title>Dashboard - InvestPro</title>
 
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
 </head>
 
-<body>
+<body class="dashboard-page">
 
 <header>
-    <div class="logo">InvestPro</div>
-
-    <nav>
-        <a href="index.html">Home</a>
+  
         <a href="dashboard.html">Dashboard</a>
         <a href="plans.html">Plans</a>
         <a href="#" id="logoutBtn">Logout</a>
     </nav>
 </header>
 
-
-<main class="dashboard-page">
+<main>
 
     <!-- Welcome -->
     <section class="dashboard-welcome">
@@ -50,30 +49,44 @@
         </div>
 
     </section>
+    <section class="top-wrap">
 
+  <div class="bal-card">
+    <p class="bal-label">Total Balance</p>
+    <h2 class="bal-amount" id="balance">₦0.00</h2>
 
-    <!-- Balance -->
-   <section class="balance-card">
-
-    <div>
-        <span>📈INVESTMENT PORTFOLIO BALANCE📉</span>
-
-        <h2 id="balance">
-            ₦0.00
-        </h2>
-
-        <p class="balance-note">
-          <strong>Your Dashboard Shows Demo Balance Until You Deposit
-This balance is for demonstration purposes only. Your real balance updates immediately after your first verified deposit.</strong>
-        </p>
+    <div class="bal-stats">
+      <div class="bal-stat">
+        <span>Demo Returns</span>
+        <strong id="demoReturns">₦0.00</strong>
+      </div>
+      <div class="bal-stat">
+        <span>Referral Bonus</span>
+        <strong id="topReferralBonus">₦0.00</strong>
+      </div>
+      <div class="bal-stat">
+        <span>Task Earnings</span>
+        <strong id="taskEarnings">₦0.00</strong>
+      </div>
     </div>
+  </div>
 
-    <div class="balance-icon">
-        💰
-    </div>
+  <div class="tile-grid">
+    <button type="button" class="tile" id="openDeposit">
+      <span class="tile-ico">💳</span><span>Deposit</span>
+    </button>
+    <button type="button" class="tile" id="openWithdraw">
+      <span class="tile-ico">🏧</span><span>Withdraw</span>
+    </button>
+    <a class="tile" href="plans.html">
+      <span class="tile-ico">📈</span><span>Invest</span>
+    </a>
+    <button type="button" class="tile" id="goReferral">
+      <span class="tile-ico">🎁</span><span>Refer &amp; Earn</span>
+    </button>
+  </div>
 
 </section>
-
 
     <!-- Summary -->
     <section class="dashboard-summary">
@@ -121,10 +134,6 @@ This balance is for demonstration purposes only. Your real balance updates immed
             <div>
                 <span>Demo Returns</span>
 
-                <strong id="demoReturns">
-                    ₦0.00
-                </strong>
-            </div>
 
         </div>
 
@@ -132,351 +141,107 @@ This balance is for demonstration purposes only. Your real balance updates immed
 
 
     <!-- Investments -->
-  <!-- =========================
-     REFERRAL PROGRAM
-========================= -->
 
-    <div class="section-heading">
-        <div>
-            <p class="referral-label">🎁 INVITE & EARN</p>
-            <h2>Referral Program</h2>
-            <p>
-                Invite friends to your InvestPro demo platform
-                and earn demo referral bonuses.
-            </p>
+
+
+      <!-- INVITE POPUP -->
+<div class="md-overlay" id="referralModal">
+    <div class="md-box">
+        <button type="button" class="md-close" data-close>✕</button>
+        <h3>🎁 Invite &amp; Earn</h3>
+        <p class="md-note" style="margin:0 0 14px">Invite friends with your personal link. You earn a bonus when they sign up and make a qualifying investment.</p>
+        
+        <div class="ref-code-box">
+            <span>Your referral code</span>
+            <strong id="referralCode">Loading...</strong>
+        </div>
+        
+        <label class="md-label" for="referralLink">Your referral link</label>
+        <input type="text" id="referralLink" class="md-input" readonly value="Loading...">
+        <button type="button" id="copyReferralBtn" class="md-btn alt">📋 Copy link</button>
+        
+        <div class="share-row">
+            <button type="button" class="share-btn wa" id="shareWhatsApp">WhatsApp</button>
+            <button type="button" class="share-btn fb" id="shareFacebook">Facebook</button>
+            <button type="button" class="share-btn more" id="shareMore">Share…</button>
+        </div>
+        
+        <div class="ref-stats">
+            <div><span>People referred</span><strong id="referralCount">0</strong></div>
+            <div><span>Bonuses earned</span><strong id="referralBonus">₦0.00</strong></div>
         </div>
     </div>
-
-
-    <div class="referral-card">
-
-        <!-- Referral Header -->
-        <div class="referral-card-header">
-
-            <div class="referral-icon">
-                🎁
-            </div>
-
-            <div>
-                <h3>Share InvestPro</h3>
-                <p>
-                  🎉  Invite friends using your personal
-                    referral link and get massive bonus when they sign up and invest🎊.
-                </p>
-            </div>
-
-        </div>
-
-
-        <!-- Referral Code -->
-        <div class="referral-code-box">
-
-            <span>Your Referral Code</span>
-
-            <strong id="referralCode">
-                Loading...
-            </strong>
-
-        </div>
-
-
-        <!-- Referral Link -->
-        <div class="referral-link-box">
-
-            <label for="referralLink">
-                Your Referral Link
-            </label>
-
-            <div class="referral-link-row">
-
-                <input
-                    type="text"
-                    id="referralLink"
-                    readonly
-                    value="Loading..."
-                >
-
-                <button
-                    id="copyReferralBtn"
-                    class="auth-btn referral-copy-btn"
-                    type="button">
-                    📋 Copy
-                </button>
-
-            </div>
-            <h3><strong>💰Invite to earn using WhatsApp or Facebook💰 </strong></h3>
-            <div class="share-row">
-    <button type="button" class="share-btn wa" id="shareWhatsApp">WhatsApp</button>
-    <button type="button" class="share-btn fb" id="shareFacebook">Facebook</button>
-    <button type="button" class="share-btn more" id="shareMore">Share…</button>
 </div>
-
-        </div>
-
-
-        <!-- Referral Statistics -->
-        <div class="referral-stats">
-
-            <div class="referral-stat">
-
-                <div class="referral-stat-icon">
-                    👥
-                </div>
-
-                <div>
-                    <span>People Referred</span>
-
-                    <strong id="referralCount">
-                        0
-                    </strong>
-                </div>
-
-            </div>
-
-
-            <div class="referral-stat">
-
-                <div class="referral-stat-icon">
-                    🎁
-                </div>
-
-                <div>
-                    <span>investment Bonuses Earned</span>
-
-                    <strong id="referralBonus">
-                        ₦0.00
-                    </strong>
-                </div>
-
-            </div>
-
-        </div>
-
-
-      
-
-            <div class="bonus-icon">
-                🎉
-            </div>
-
-            <div class="bonus-content">
-
-                <strong>
-                    ₦500 investpro Referral Bonus
-                </strong>
-
-                <p>
-                    Earn a investpro bonus when a person you
-                    referred completes a qualifying 
-                    investment.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <!-- How It Works -->
-        <div class="referral-how">
-
-            <h3>How It Works</h3>
-
-            <div class="referral-steps">
-
-                <div class="referral-step">
-
-                    <div class="step-number">
-                        1
-                    </div>
-
-                    <div>
-                        <strong>Share your link</strong>
-                        <p>
-                           ©️ Copy and send your referral
-                            link to a friend.
-                        </p>
-                    </div>
-
-                </div>
-
-
-                <div class="referral-step">
-
-                    <div class="step-number">
-                        2
-                    </div>
-
-                    <div>
-                        <strong>Friend signs up</strong>
-                        <p>
-                          📥  Your friend creates an 
-                            InvestPro account through your link.
-                        </p>
-                    </div>
-
-                </div>
-
-
-                <div class="referral-step">
-
-                    <div class="step-number">
-                        3
-                    </div>
-
-                    <div>
-                        <strong>investment bonus</strong>
-                        <p>
-                         💯   A qualifying  investment
-                            completes the referral.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
     <!-- =========================
      DEMO DEPOSIT
-========================= -->
+=======================
 
+<!-- DEPOSIT POPUP -->
+<div class="md-overlay" id="depositModal">
+  <div class="md-box">
+    <button type="button" class="md-close" data-close>✕</button>
+    <h3>💳 Deposit</h3>
 
-<div class="wd-card" id="withdrawal-section">
-    <div class="wd-head">
-        <div class="wd-icon">💸</div>
-        <div>
-            <h3>Withdraw</h3>
-            <p><strong>📤🏦Request a withdrawal to your bank account.</strong></p>
-        </div>
+    <div class="md-tabs">
+      <button type="button" class="md-tab" data-tab="bank">Bank transfer</button>
+      
+      <button type="button" class="md-tab active" data-tab="card">Card</button>
     </div>
+
+    <div class="md-panel" id="tabCard">
+      <label class="md-label" for="mdDepAmount">Amount (NGN)</label>
+      <input type="number" id="mdDepAmount" class="md-input" inputmode="numeric" placeholder="Minimum ₦1,000" min="1000">
+      <button type="button" id="mdDepBtn" class="md-btn">Pay with Flutterwave</button>
+    </div>
+
+    <div class="md-panel" id="tabBank" style="display:none">
+      <div class="md-acct">
+        <div class="md-acct-row"><span>Bank</span><strong id="mdAcctBank"></strong></div>
+        <div class="md-acct-row"><span>Account number</span><strong id="mdAcctNumber"></strong><button type="button" class="md-copy" id="mdCopyNumber">📋 Copy</button></div>
+        <div class="md-acct-row"><span>Account name</span><strong id="mdAcctName"></strong><button type="button" class="md-copy" id="mdCopyName">📋 Copy</button></div>
+      </div>
+      <label class="md-label" for="mdManAmount">Amount sent (NGN)</label>
+      <input type="number" id="mdManAmount" class="md-input" inputmode="numeric" placeholder="Minimum ₦1,000" min="1000">
+      <label class="md-label" for="mdManSender">Sender account name</label>
+      <input type="text" id="mdManSender" class="md-input" placeholder="Name on the account you paid from">
+      <button type="button" id="mdManBtn" class="md-btn alt">Submit transfer details</button>
+      <p id="mdManMsg" class="md-msg"></p>
+    </div>
+  </div>
+</div>
+
+<!-- WITHDRAW POPUP -->
+<div class="md-overlay" id="withdrawModal">
+  <div class="md-box">
+    <button type="button" class="md-close" data-close>✕</button>
+    <h3>💸 Withdraw</h3>
 
     <form id="withdrawalForm" onsubmit="submitDemoWithdrawal(event)">
+      <label class="md-label" for="withdrawalAmount">Amount (NGN)</label>
+      <input type="number" id="withdrawalAmount" class="md-input" inputmode="numeric" placeholder="Minimum ₦2,000" min="2000">
 
-        <div class="wd-field">
-            <label for="withdrawalAmount">Amount (NGN)</label>
-            <input type="number" id="withdrawalAmount" inputmode="numeric"
-                   placeholder="Minimum ₦2,000" min="2000">
-        </div>
+      <label class="md-label" for="withdrawalBank">Bank</label>
+      <select id="withdrawalBank" class="md-input"><option value="">Select bank</option></select>
 
-        <div class="wd-field">
-            <label for="withdrawalBank">Bank</label>
-           <select id="withdrawalBank">
-    <option value="">Select bank</option>
-    <option value="Access Bank">Access Bank</option>
-    <option value="Citibank Nigeria">Citibank Nigeria</option>
-    <option value="Ecobank Nigeria">Ecobank Nigeria</option>
-    <option value="Fidelity Bank">Fidelity Bank</option>
-    <option value="First Bank of Nigeria">First Bank of Nigeria</option>
-    <option value="First City Monument Bank">First City Monument Bank (FCMB)</option>
-    <option value="Globus Bank">Globus Bank</option>
-    <option value="Guaranty Trust Bank">Guaranty Trust Bank (GTBank)</option>
-    <option value="Heritage Bank">Heritage Bank</option>
-    <option value="Jaiz Bank">Jaiz Bank</option>
-    <option value="Keystone Bank">Keystone Bank</option>
-    <option value="Polaris Bank">Polaris Bank</option>
-    <option value="Providus Bank">Providus Bank</option>
-    <option value="Stanbic IBTC Bank">Stanbic IBTC Bank</option>
-    <option value="Standard Chartered Bank">Standard Chartered Bank</option>
-    <option value="Sterling Bank">Sterling Bank</option>
-    <option value="Titan Trust Bank">Titan Trust Bank</option>
-    <option value="Union Bank of Nigeria">Union Bank of Nigeria</option>
-    <option value="United Bank For Africa">United Bank For Africa (UBA)</option>
-    <option value="Unity Bank">Unity Bank</option>
-    <option value="Wema Bank">Wema Bank</option>
-    <option value="Zenith Bank">Zenith Bank</option>
-    <option value="Opay">OPay</option>
-    <option value="PalmPay">PalmPay</option>
-    <option value="Kuda">Kuda Bank</option>
-    <option value="Moniepoint">Moniepoint</option>
-    <option value="VFD Microfinance Bank">VFD Microfinance Bank</option>
-</select>
-        </div>
+      <label class="md-label" for="withdrawalAccountName">Account name</label>
+      <input type="text" id="withdrawalAccountName" class="md-input" placeholder="Name on the account">
 
-        <div class="wd-field">
-            <label for="withdrawalAccountName">Account name</label>
-            <input type="text" id="withdrawalAccountName" placeholder="Name on the account">
-        </div>
+      <label class="md-label" for="withdrawalAccountNumber">Account number</label>
+      <input type="text" id="withdrawalAccountNumber" class="md-input" inputmode="numeric" maxlength="10" placeholder="10 digits">
 
-        <div class="wd-field">
-            <label for="withdrawalAccountNumber">Account number</label>
-            <input type="text" id="withdrawalAccountNumber" inputmode="numeric"
-                   maxlength="10" placeholder="10 digits">
-        </div>
-
-        <button type="submit" id="withdrawalBtn" class="wd-btn">
-            💸 Request Withdrawal
-        </button>
-
-        <p id="withdrawalMessage" class="wd-message"></p>
+      <button type="submit" id="withdrawalBtn" class="md-btn">💸 Request Withdrawal</button>
+      <p id="withdrawalMessage" class="md-msg"></p>
     </form>
 
-    <p class="wd-note">Withdrawals are reviewed before they are paid. You need at least 3 referrals to withdraw.</p>
-
-    <a href="deposit-history.html" class="wd-history">View deposit &amp; withdrawal history →</a>
-</div>
+    <p class="md-note">Withdrawals are reviewed before they are paid. You need at least 3 referrals to withdraw.</p>
+  </div>
+        
 
 </main>
-<!-- Investment Details Modal -->
-<div id="investmentModal" class="investment-modal">
-
-    <div class="investment-modal-content">
-
-        <button
-            id="closeInvestmentModal"
-            class="investment-modal-close"
-            type="button">
-            ×
-        </button>
-
-        <h2 id="modalPlanName">Investment Details</h2>
-
-        <p id="modalDescription">
-            ℹ️ investment information
-        </p>
-
-        <div class="modal-details">
-
-            <div>
-                <span>Amount</span>
-                <strong id="modalAmount">₦0.00</strong>
-            </div>
-
-            <div>
-                <span>Duration</span>
-                <strong id="modalDuration">0 days</strong>
-            </div>
-
-            <div>
-                <span>investment Return Rate</span>
-                <strong id="modalReturnRate">0%</strong>
-            </div>
-
-            <div>
-                <span>🔄Estimated investment Return</span>
-                <strong id="modalDemoReturn">₦0.00</strong>
-            </div>
-
-            <div>
-                <span>Status</span>
-                <strong id="modalStatus">active</strong>
-            </div>
-
-            <div>
-                <span>Started</span>
-                <strong id="modalDate">--</strong>
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
 
 <footer>
 
-    <p><a href="task.html">view task </a>
+    <p>
         © 2026 InvestPro. Created by Tesla Company, Trusted By Millions of People.
     </p>
 
