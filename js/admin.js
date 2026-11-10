@@ -1412,3 +1412,58 @@ async function reviewManualDeposit(id, approve) {
 }
 
 loadManualDeposits();
+
+async function loadAdminTaskSubs() {
+  const box = document.getElementById("adminTaskSubs");
+  if (!box) return;
+
+  const { data, error } = await supabaseClient.rpc("admin_task_submissions");
+  if (error) { box.textContent = "Unable to load submissions."; console.error(error); return; }
+  if (!data || !data.length) { box.textContent = "No task submissions yet."; return; }
+
+  box.innerHTML = "";
+  data.forEach((x) => {
+    const card = document.createElement("div");
+    card.className = "admin-withdrawal-card";
+
+    const info = document.createElement("p");
+    info.textContent =
+      `#${x.id} | ${x.title || "Task"} | +₦${Number(x.reward || 0).toLocaleString("en-NG")} | ` +
+      `${x.email || "-"} | ${x.status}`;
+    card.appendChild(info);
+
+    const proof = document.createElement("p");
+    proof.textContent = "Proof: ";
+    try {
+      const u = new URL(x.proof);
+      if (/^https?:$/.test(u.protocol)) {
+        const a = document.createElement("a");
+        a.href = u.href; a.target = "_blank"; a.rel = "noopener noreferrer";
+        a.textContent = u.href;
+        proof.appendChild(a);
+      } else proof.append(x.proof);
+    } catch { proof.append(x.proof || "-"); }
+    card.appendChild(proof);
+
+    if (x.status === "pending") {
+      const ok = document.createElement("button");
+      ok.type = "button"; ok.className = "auth-btn"; ok.textContent = "✅ Approve";
+      ok.onclick = () => reviewTaskSub(x.id, true);
+      const no = document.createElement("button");
+      no.type = "button"; no.className = "danger-btn"; no.textContent = "❌ Reject";
+      no.onclick = () => reviewTaskSub(x.id, false);
+      card.append(ok, no);
+    }
+    box.appendChild(card);
+  });
+}
+
+async function reviewTaskSub(id, approve) {
+  if (!confirm(approve ? "Approve and credit this reward?" : "Reject this submission?")) return;
+  const { data, error } = await supabaseClient.rpc("review_task_submission",
+    { p_id: id, p_approve: approve });
+  alert(error ? error.message : data?.message || "Done");
+  loadAdminTaskSubs();
+}
+
+loadAdminTaskSubs();

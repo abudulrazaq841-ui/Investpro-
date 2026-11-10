@@ -69,6 +69,16 @@
                     required
                 >
             </div>
+            <div class="terms-row">
+    <input type="checkbox" id="agreeTerms">
+    <label for="agreeTerms">
+        I agree to the
+        <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a>
+        and
+        <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>
+    </label>
+</div>
+<p id="termsError" class="terms-error"></p>
 
             <button type="submit" class="auth-btn">
                 Create Account
@@ -197,6 +207,33 @@ if (error) alert("Google login failed: " + error.message);
     if (e.target.closest('button[type="submit"], button:not([type]), input[type="submit"]')) {
       guard(e);
     }
+  }, true);
+})();
+</script>
+<script>
+(function () {
+  const agree = document.getElementById("agreeTerms");
+  const err = document.getElementById("termsError");
+  const form = document.getElementById("signupForm");
+  if (!agree || !form) return;
+
+  function blocked(e) {
+    if (agree.checked) return false;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    err.textContent = "Please agree to the Terms of Use and Privacy Policy to continue.";
+    agree.focus();
+    return true;
+  }
+
+  agree.addEventListener("change", () => { if (agree.checked) err.textContent = ""; });
+
+  // email signup (runs before your auth.js code)
+  form.addEventListener("submit", blocked, true);
+
+  // Google signup (the button sits outside the form)
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("#googleBtn")) blocked(e);
   }, true);
 })();
 </script>

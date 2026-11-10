@@ -83,6 +83,7 @@ if (userError || !user) {
 await supabaseClient.rpc("ensure_profile", { p_ref: pendingRef });
 localStorage.removeItem("pending_ref");
 await updateUserInvestments();
+await supabaseClient.rpc("settle_demo_returns");
 
 // Load user profile  
 const { data: profile, error: profileError } =  
@@ -1051,7 +1052,155 @@ async function fillTopStats() {
 
   set("demoReturns", returns);
   set("topReferralBonus", bonus);
-  set("taskEarnings", 0); // no tasks feature yet
+
 }
 
 fillTopStats();
+
+// ===== EARN REWARDS =====
+const tkNaira = (n) =>
+  "₦" + Number(n || 0).toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+function tkEl(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+function tkSet(id, v) { const n = document.getElementById(id); if (n) n.textContent = v; }
+function tkSafeUrl(u) {
+  try { const x = new URL(u); return /^https?:$/.test(x.protocol) ? x.href : null; }
+  catch { return null; }
+}
+function tkIcon(p) {
+  p = String(p || "").toLowerCase();
+  if (p.includes("whatsapp")) return "💬";
+  if (p.includes("youtube")) return "▶️";
+  if (p.includes("facebook")) return "📘";
+  if (p.includes("instagram")) return "📷";
+  if (p.includes("tiktok")) return "🎵";
+  if (p.includes("twitter") || p.includes("x")) return "🐦";
+  if (p.includes("telegram")) return "✈️";
+  return "🎯";
+}
+
+async function tkRefreshSummary() {
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) return;
+  const { data: p } = await supabaseClient
+    .from("profiles").select("rewards_balance").eq("id", user.id).single();
+  const v = tkNaira(p?.rewards_balance);
+  tkSet("taskEarnings", v);
+  tkSet("tkTotal", v);
+}
+
+async function loadTasks() {
+  const list = document.getElementById("tkList");
+  if (!list) return;
+
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) return;
+
+  const [t, s] = await Promise.all([
+    supabaseClient.from("social_tasks")
+      .select("id, title, description, platform, reward_amount, task_url")
+      .eq("is_active", true).order("created_at", { ascending: true }),
+    supabaseClient.from("user_task_submissions")
+      .select("task_id, status").eq("user_id", user.id),
+  ]);
+
+  if (t.error || s.error) {
+    console.error(t.error || s.error);
+    list.textContent = "Unable to load tasks.";
+    return;
+  }
+
+  const status = {};
+  (s.data || []).forEach((r) => { status[r.task_id] = r.status; });
+
+  const tasks = t.data || [];
+  const done = tasks.filter((x) => status[x.id] === "approved").length;
+  tkSet("tkProgress", `${done} of ${tasks.length} tasks completed`);
+  const fill = document.getElementById("tkBarFill");
+  if (fill) fill.style.width = (tasks.length ? (done / tasks.length) * 100 : 0) + "%";
+
+  list.innerHTML = "";
+  if (!tasks.length) { list.textContent = "No tasks available right now."; return; }
+
+  tasks.forEach((task) => {
+    const st = status[task.id];
+    const card = tkEl("div", "tk-card");
+
+    const head = tkEl("div", "tk-head");
+    head.appendChild(tkEl("div", "tk-ico", tkIcon(task.platform)));
+    const info = tkEl("div");
+    info.appendChild(tkEl("p", "tk-title", task.title));
+    info.appendChild(tkEl("p", "tk-desc", task.description || ""));
+    head.appendChild(info);
+    head.appendChild(tkEl("div", "tk-reward", "+" + tkNaira(task.reward_amount)));
+    card.appendChild(head);
+
+    if (st) {
+      const label = { pending: "⏳ Pending review", approved: "✅ Approved", rejected: "❌ Rejected, you can resubmit" }[st];
+      card.appendChild(tkEl("span", "tk-badge " + st, label));
+    }
+
+    const url = tkSafeUrl(task.task_url);
+    if (url && st !== "approved") {
+      const a = tkEl("a", "tk-visit", "Visit Platform");
+      a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer";
+      card.appendChild(a);
+    }
+
+    if (st !== "approved") {
+      const locked = st === "pending";
+      const input = tkEl("input", "tk-proof");
+      input.type = "text";
+      input.placeholder = "Paste your proof or public link";
+      input.maxLength = 500;
+      input.disabled = locked;
+
+      const btn = tkEl("button", "tk-submit", st === "rejected" ? "Resubmit task" : "Submit task");
+      btn.type = "button";
+      btn.disabled = locked;
+      btn.addEventListener("click", () => submitTask(task.id, input, btn));
+
+      card.append(input, btn);
+    }
+    list.appendChild(card);
+  });
+}
+
+async function submitTask(taskId, input, btn) {
+  const msg = document.getElementById("tkMsg");
+  const proof = input.value.trim();
+  if (proof.length < 5) { msg.textContent = "Enter your proof first."; return; }
+
+  btn.disabled = true;
+  msg.textContent = "Submitting...";
+
+  const { data, error } = await supabaseClient.rpc("submit_task", {
+    p_task_id: taskId,
+    p_proof: proof,
+  });
+
+  if (error || !data?.success) {
+    console.error(error);
+    msg.textContent = data?.message || "Unable to submit task.";
+    btn.disabled = false;
+    return;
+  }
+  msg.textContent = "✅ " + data.message;
+  await loadTasks();
+}
+
+function openTasksPopup() {
+  openModal("tasksModal");
+  tkSet("tkProgress", "Loading...");
+  loadTasks();
+  tkRefreshSummary();
+}
+document.getElementById("openTasks")?.addEventListener("click", openTasksPopup);
+document.getElementById("taskStat")?.addEventListener("click", openTasksPopup);
+
+tkRefreshSummary();

@@ -1,53 +1,53 @@
 let currentTab = "deposits";
 let currentFilter = "all";
-let data = { deposits: [], withdrawals: [] };
+let data = { deposits: [], withdrawals: [], returns: [] };
 
 const FILTERS = {
-  deposits: ["all", "approved", "pending"],
+  deposits: ["all", "approved", "pending", "rejected"],
   withdrawals: ["all", "pending", "processing", "completed", "cancelled"],
+  returns: ["all"],
 };
 
 const naira = (n) =>
-  "₦" + Number(n || 0).toLocaleString("en-NG", { minimumFractionDigits: 2 });
-
+  "₦" + Number(n || 0).toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const fmt = (d) => new Date(d).toLocaleString("en-NG");
 
 async function loadHistory() {
   const total = document.getElementById("dhTotal");
 
   const { data: { user } } = await supabaseClient.auth.getUser();
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
+  if (!user) { window.location.href = "login.html"; return; }
 
-  const [dep, wd] = await Promise.all([
-    supabaseClient
-      .from("demo_deposits")
+  await supabaseClient.rpc("settle_demo_returns");
+
+  const [dep, wd, ret] = await Promise.all([
+    supabaseClient.from("demo_deposits")
       .select("id, amount, status, created_at, approved_at, payment_reference")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false }),
-    supabaseClient
-      .from("demo_withdrawals")
+      .eq("user_id", user.id).order("created_at", { ascending: false }),
+    supabaseClient.from("demo_withdrawals")
       .select("id, amount, status, created_at, bank_name, account_name, account_number")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false }),
+      .eq("user_id", user.id).order("created_at", { ascending: false }),
+    supabaseClient.from("demo_earnings")
+      .select("id, plan_name, principal, profit, total, created_at")
+      .eq("user_id", user.id).order("created_at", { ascending: false }),
   ]);
 
-  if (dep.error || wd.error) {
-    console.error(dep.error || wd.error);
+  if (dep.error || wd.error || ret.error) {
+    console.error(dep.error || wd.error || ret.error);
     total.textContent = "Unable to load history.";
     return;
   }
 
   data.deposits = dep.data || [];
   data.withdrawals = wd.data || [];
+  data.returns = ret.data || [];
   render();
 }
 
 function renderFilters() {
   const box = document.getElementById("dhFilters");
   box.innerHTML = "";
+  if (FILTERS[currentTab].length < 2) return;
   FILTERS[currentTab].forEach((f) => {
     const b = document.createElement("button");
     b.dataset.f = f;
@@ -57,17 +57,19 @@ function renderFilters() {
   });
 }
 
-function renderTotal(rows) {
+function renderTotal() {
   const total = document.getElementById("dhTotal");
   const all = data[currentTab];
+
   if (currentTab === "deposits") {
-    const sum = all.filter((d) => d.status === "approved")
-      .reduce((s, d) => s + Number(d.amount || 0), 0);
+    const sum = all.filter((d) => d.status === "approved").reduce((s, d) => s + Number(d.amount || 0), 0);
     total.textContent = `Total deposited: ${naira(sum)} (${all.length} deposit${all.length === 1 ? "" : "s"})`;
-  } else {
-    const sum = all.filter((w) => w.status === "completed")
-      .reduce((s, w) => s + Number(w.amount || 0), 0);
+  } else if (currentTab === "withdrawals") {
+    const sum = all.filter((w) => w.status === "completed").reduce((s, w) => s + Number(w.amount || 0), 0);
     total.textContent = `Total withdrawn: ${naira(sum)} (${all.length} request${all.length === 1 ? "" : "s"})`;
+  } else {
+    const sum = all.reduce((s, r) => s + Number(r.profit || 0), 0);
+    total.textContent = `Total returns earned: ${naira(sum)} (${all.length} payout${all.length === 1 ? "" : "s"})`;
   }
 }
 
@@ -80,17 +82,17 @@ function line(text) {
 
 function render() {
   renderFilters();
+  renderTotal();
+
   const list = document.getElementById("dhList");
   const rows = data[currentTab].filter(
     (r) => currentFilter === "all" || r.status === currentFilter
   );
-
-  renderTotal(rows);
   list.innerHTML = "";
 
   if (!rows.length) {
     const p = document.createElement("p");
-    p.textContent = currentTab === "deposits" ? "No deposits found." : "No withdrawals found.";
+    p.textContent = "Nothing here yet.";
     list.appendChild(p);
     return;
   }
@@ -102,25 +104,32 @@ function render() {
     const top = document.createElement("div");
     top.className = "dh-row";
     const amt = document.createElement("strong");
-    amt.textContent = naira(r.amount);
     const badge = document.createElement("span");
-    badge.className = "dh-badge " + r.status;
-    badge.textContent = r.status;
+
+    if (currentTab === "returns") {
+      amt.textContent = "+" + naira(r.total);
+      badge.className = "dh-badge approved";
+      badge.textContent = "credited";
+    } else {
+      amt.textContent = naira(r.amount);
+      badge.className = "dh-badge " + r.status;
+      badge.textContent = r.status;
+    }
     top.append(amt, badge);
     card.appendChild(top);
-
     card.appendChild(line(fmt(r.created_at)));
 
     if (currentTab === "deposits") {
       if (r.approved_at) card.appendChild(line("Approved: " + fmt(r.approved_at)));
       card.appendChild(line("Ref: " + (r.payment_reference || "-")));
-    } else {
+    } else if (currentTab === "withdrawals") {
       const acct = r.account_number || "";
       const masked = acct.length >= 4 ? "•••• " + acct.slice(-4) : acct;
       card.appendChild(line(`${r.bank_name || "-"} | ${r.account_name || "-"} | ${masked}`));
       card.appendChild(line("Request #" + r.id));
+    } else {
+      card.appendChild(line(`${r.plan_name || "Plan"}: invested ${naira(r.principal)} + return ${naira(r.profit)}`));
     }
-
     list.appendChild(card);
   });
 }
@@ -130,8 +139,7 @@ document.getElementById("dhTabs").addEventListener("click", (e) => {
   if (!btn) return;
   currentTab = btn.dataset.tab;
   currentFilter = "all";
-  document.querySelectorAll("#dhTabs button")
-    .forEach((b) => b.classList.toggle("active", b === btn));
+  document.querySelectorAll("#dhTabs button").forEach((b) => b.classList.toggle("active", b === btn));
   render();
 });
 

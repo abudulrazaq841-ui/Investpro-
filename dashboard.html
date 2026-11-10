@@ -16,7 +16,7 @@
 <body class="dashboard-page">
 
 <header>
-  
+  <nav>
         <a href="dashboard.html">Dashboard</a>
         <a href="plans.html">Plans</a>
         <a href="#" id="logoutBtn">Logout</a>
@@ -64,10 +64,10 @@
         <span>Referral Bonus</span>
         <strong id="topReferralBonus">₦0.00</strong>
       </div>
-      <div class="bal-stat">
-        <span>Task Earnings</span>
-        <strong id="taskEarnings">₦0.00</strong>
-      </div>
+     <div class="bal-stat" id="taskStat" style="cursor:pointer">
+    <span>Task Earnings</span>
+    <strong id="taskEarnings">₦0.00</strong>
+</div>
     </div>
   </div>
 
@@ -84,6 +84,9 @@
     <button type="button" class="tile" id="goReferral">
       <span class="tile-ico">🎁</span><span>Refer &amp; Earn</span>
     </button>
+    <button type="button" class="tile tile-wide" id="openTasks">
+    <span class="tile-ico">🎯</span><span>Earn Rewards</span>
+</button>
   </div>
 
 </section>
@@ -235,6 +238,27 @@
 
     <p class="md-note">Withdrawals are reviewed before they are paid. You need at least 3 referrals to withdraw.</p>
   </div>
+  </div>
+  <!-- EARN REWARDS POPUP -->
+<div class="md-overlay" id="tasksModal">
+  <div class="md-box tall">
+    <button type="button" class="md-close" data-close>✕</button>
+    <h3>🎯 Earn Rewards</h3>
+
+    <div class="tk-scroll">
+      <div class="tk-top">
+        <span>Rewards earned</span>
+        <strong id="tkTotal">₦0.00</strong>
+        <div class="tk-bar"><div id="tkBarFill"></div></div>
+        <small id="tkProgress">0 of 0 tasks completed</small>
+      </div>
+
+      <p class="md-note" style="margin:12px 0">Complete a task, submit your proof, and the reward is added to your balance after review.</p>
+      <p id="tkMsg" class="md-msg"></p>
+      <div id="tkList">Loading tasks...</div>
+    </div>
+  </div>
+</div>
         
 
 </main>
