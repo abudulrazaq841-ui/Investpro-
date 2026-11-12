@@ -330,57 +330,7 @@ footer{
   .hero{padding: 60px 20px}
 }
 
-/* Clean Home Page */
 
-.hero-label {
-    font-size: 13px;
-    font-weight: bold;
-    letter-spacing: 1px;
-    margin-bottom: 15px;
-}
-
-.hero-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 25px;
-    flex-wrap: wrap;
-}
-
-.secondary-btn {
-    display: inline-block;
-    padding: 12px 24px;
-    border-radius: 8px;
-    text-decoration: none;
-    border: 1px solid #ddd;
-}
-
-.section-text {
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-.feature-icon {
-    font-size: 32px;
-    margin-bottom: 10px;
-}
-
-@media (max-width: 700px) {
-
-    .hero h1 {
-        font-size: 34px;
-        line-height: 1.2;
-    }
-
-    .hero-buttons {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .hero-buttons a {
-        text-align: center;
-    }
-}
 /* ===== IMPROVED NAVIGATION ===== */
 
 header nav {
@@ -2149,3 +2099,19 @@ img,svg,video{max-width:100%;height:auto}
 .share-btn.more{grid-column:1 / -1}
 .share-btn{min-width:0}
 
+
+/* InvestPro Premium Logo */
+
+#navbar .logo {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+#navbar .logo img {
+    width: 180px !important;
+    height: auto !important;
+    max-height: 65px;
+    object-fit: contain;
+    display: block;
+}

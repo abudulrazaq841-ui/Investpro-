@@ -6,66 +6,15 @@
 <title>Investment Plans - InvestPro</title>
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/plans.css">
-<style>
-.pl-wrap{max-width:520px;margin:0 auto;padding:24px 16px 40px}
-.pl-back{color:#9aa4b2;text-decoration:none;font-size:14px}
-.pl-title{text-align:center;margin:18px 0 6px;font-size:28px}
-.pl-sub{text-align:center;color:#9aa4b2;margin-bottom:22px}
 
-.pl-wallet{background:#0f172a;border:1px solid #1e293b;border-radius:20px;padding:18px;margin-bottom:20px}
-.pl-wallet input{width:100%;box-sizing:border-box;margin:10px 0;padding:12px;border-radius:12px;border:1px solid #334;background:#111c33;color:#fff}
-.pl-notice{color:#f59e0b;font-size:14px;margin:8px 0 0}
-.pl-link{display:inline-block;margin-top:12px;color:#f59e0b;font-size:16px;font-weight:700}
-
-.pl-acct{background:#111c33;border:1px solid #1e293b;border-radius:14px;padding:4px 12px;margin:10px 0}
-.pl-acct-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:10px 0;border-bottom:1px solid #1e293b}
-.pl-acct-row:last-child{border-bottom:0}
-.pl-acct-row span{flex:0 0 100%;color:#9aa4b2;font-size:13px}
-.pl-acct-row strong{flex:1;min-width:0;font-size:18px;letter-spacing:.5px;word-break:normal}
-.pl-copy{background:#f59e0b;color:#111;border:0;border-radius:10px;padding:8px 12px;font-weight:700;font-size:13px;cursor:pointer}
-.pl-copy.done{background:#22c55e;color:#fff}
-
-.pl-card{position:relative;overflow:hidden;background:#0f172a;border:1px solid #1e293b;border-radius:24px;padding:22px;margin-bottom:20px}
-.pl-card.popular{border-color:#f59e0b}
-.pl-ribbon{position:absolute;top:14px;right:-34px;transform:rotate(40deg);background:#f59e0b;color:#111;font-size:11px;font-weight:700;padding:4px 40px}
-.pl-name{font-size:22px;font-weight:700;margin:0;padding-right:40px}
-.pl-loc{color:#9aa4b2;font-size:14px;margin:4px 0 16px}
-.pl-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
-.pl-stat{background:#111c33;border-radius:14px;padding:12px 6px;text-align:center}
-.pl-stat strong{display:block;color:#f59e0b;font-size:18px}
-.pl-stat span{color:#9aa4b2;font-size:12px}
-.pl-features{list-style:none;padding:0;margin:0 0 18px}
-.pl-features li{margin:8px 0;font-size:15px}
-.pl-features li::before{content:"✓ ";color:#22c55e;font-weight:700}
-
-.pl-btn{width:100%;border:0;border-radius:16px;padding:16px;font-size:17px;font-weight:700;background:#f59e0b;color:#111;cursor:pointer}
-.pl-btn.alt{background:#1e293b;color:#fff}
-.pl-btn:disabled{opacity:.6}
-.pl-risk{background:#1a1205;border:1px solid #f59e0b;border-radius:18px;padding:16px;font-size:14px;line-height:1.5;color:#fcd9a0}
-
-.pm-overlay{position:fixed;inset:0;background:rgba(2,6,18,.75);backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center;z-index:999}
-.pm-overlay.open{display:flex}
-.pm-box{position:relative;width:100%;max-width:480px;background:#0f172a;border:1px solid #1e293b;border-radius:24px 24px 0 0;padding:24px 20px 28px}
-.pm-close{position:absolute;top:14px;right:14px;background:#1e293b;color:#fff;border:0;width:34px;height:34px;border-radius:50%;font-size:16px;cursor:pointer}
-.pm-icon{font-size:34px}
-.pm-box h3{margin:6px 0 2px;font-size:22px}
-.pm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
-.pm-stat{background:#111c33;border-radius:12px;padding:10px 4px;text-align:center}
-.pm-stat strong{display:block;color:#f59e0b;font-size:15px}
-.pm-stat span{color:#9aa4b2;font-size:11px}
-.pm-bal{display:flex;justify-content:space-between;font-size:14px;color:#9aa4b2;margin-bottom:8px}
-.pm-bal strong{color:#fff}
-.pm-input{width:100%;box-sizing:border-box;padding:14px;font-size:18px;border-radius:14px;border:1px solid #334;background:#111c33;color:#fff}
-.pm-preview{margin:12px 0 4px;padding:12px;border-radius:12px;background:rgba(245,158,11,.1);color:#fcd9a0;font-size:14px}
-.pm-error{color:#f87171;font-size:14px;min-height:20px;margin:6px 0}
-.pm-success{text-align:center;padding:10px 0}
-.pm-success .big{font-size:54px}
-</style>
 </head>
 <body>
 
 <header>
-  <div class="logo">InvestPro</div>
+ <a href="index.html" class="logo">
+  <img src="images/logo.svg" alt="InvestPro logo" width="36" height="36">
+  <span>InvestPro</span>
+</a>
   <nav>
     <a href="dashboard.html">Dashboard</a>
     <a href="plans.html">Plans</a>

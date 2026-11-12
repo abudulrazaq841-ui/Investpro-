@@ -891,7 +891,7 @@ document.getElementById("shareMore")?.addEventListener("click", async () => {
 
 // ===== POPUPS: DEPOSIT + WITHDRAW =====
 // keep placeholder details while this is a demo
-const MANUAL_ACCOUNT = { bank: "Opay", number: "9017748158", name: "InvestPro(optional) OR Maryam Jumai Omeh" };
+const MANUAL_ACCOUNT = { bank: "Opay", number: "9017748158", name: "InvestPro OR Maryam Jumai Omeh" };
 
 const BANKS = ["Access Bank","Citibank Nigeria","Ecobank Nigeria","Fidelity Bank","First Bank of Nigeria",
   "First City Monument Bank","Globus Bank","Guaranty Trust Bank","Heritage Bank","Jaiz Bank","Keystone Bank",

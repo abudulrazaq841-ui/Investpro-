@@ -19,7 +19,7 @@
     // Check connection
     if (!db) {
         container.textContent = "Supabase connection not found.";
-        console.error("InvestPro: Supabase client unavailable.");
+        console.error("InvestPro: Database client unavailable.");
         return;
     }
 

@@ -1,0 +1,71 @@
+/* Clean Home Page */
+
+.hero-label {
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+}
+
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+.secondary-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    border: 1px solid #ddd;
+}
+
+.section-text {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.feature-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+@media (max-width: 700px) {
+
+    .hero h1 {
+        font-size: 34px;
+        line-height: 1.2;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .hero-buttons a {
+        text-align: center;
+    }
+}
+header .logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+  color:#fff;
+  font-size:clamp(22px,6vw,28px);
+  font-weight:800;
+}
+header .logo img{
+  width:clamp(32px,9vw,40px);
+  height:auto;
+  flex:0 0 auto;
+}
+header .logo span{
+  background:linear-gradient(90deg,#fff 0%,#fbbf24 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
