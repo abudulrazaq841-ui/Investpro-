@@ -77,7 +77,7 @@ if (signupForm) {
         }
 
         message.textContent =
-            "Account created successfully. You can now log in.";
+            "ACCOUNT CREATED SUCCESSFULY🎉. YOU CAN NOW LOGIN WITH YOUR PASSWORD AND EMAIL, Please press the login button to proceed👆.";
 
         signupForm.reset();
     });
