@@ -42,7 +42,7 @@
     <div>Your balance: <strong id="walletBalance">₦0</strong></div>
     <p id="depositNotice" class="pl-notice"></p>
 
-    <input type="number" id="plDepositAmount" placeholder="Deposit amount (NGN), min 1,000" min="1000">
+    <input type="number" id="plDepositAmount" placeholder="Deposit amount (NGN), min 2,000" min="2000">
     <button type="button" id="plDepositBtn" class="pl-btn">💳 Deposit with Flutterwave</button>
 
     <a href="#" id="manualToggle" class="pl-link">Or pay by bank transfer →</a>
@@ -51,18 +51,18 @@
       <div class="pl-acct">
         <div class="pl-acct-row"><span>Bank</span><strong id="acctBank"></strong></div>
         <div class="pl-acct-row">
-          <span>Account number</span>
+          <span>Account Number</span>
           <strong id="acctNumber"></strong>
           <button type="button" class="pl-copy" id="copyNumber">📋 Copy</button>
         </div>
         <div class="pl-acct-row">
-          <span>Account name</span>
+          <span>Account Name</span>
           <strong id="acctName"></strong>
           <button type="button" class="pl-copy" id="copyName">📋 Copy</button>
         </div>
       </div>
 
-      <input type="number" id="manualAmount" placeholder="Amount sent (NGN), min 1,000" min="1000">
+      <input type="number" id="manualAmount" placeholder="Amount sent (NGN), min 2,000" min="2000">
       <input type="text" id="manualSender" placeholder="Sender account name">
       <button type="button" id="manualBtn" class="pl-btn alt">Submit transfer details</button>
       <p id="manualMsg" class="pl-notice"></p>
@@ -83,8 +83,8 @@
       <h3 id="pmTitle"></h3>
       <p class="pl-loc" id="pmLoc"></p>
       <div class="pm-stats">
-        <div class="pm-stat"><strong id="pmMin"></strong><span>Minimum</span></div>
-        <div class="pm-stat"><strong id="pmRate"></strong><span>Return</span></div>
+        <div class="pm-stat"><strong id="pmMin"></strong><span>Minimum Amount</span></div>
+        <div class="pm-stat"><strong id="pmRate"></strong><span>Daily Return</span></div>
         <div class="pm-stat"><strong id="pmDays"></strong><span>Duration</span></div>
       </div>
       <div class="pm-bal"><span>Your balance</span><strong id="pmBalance"></strong></div>
@@ -160,7 +160,7 @@ async function loadWallet(userId) {
 // ---------- Flutterwave deposit ----------
 document.getElementById("plDepositBtn")?.addEventListener("click", async () => {
   const amount = Number(document.getElementById("plDepositAmount").value);
-  if (!(amount >= 1000)) return alert("Minimum deposit is ₦1,000.");
+  if (!(amount >= 2000)) return alert("Minimum deposit is ₦2,000.");
 
   const btn = document.getElementById("plDepositBtn");
   btn.disabled = true;
@@ -227,7 +227,7 @@ document.getElementById("manualBtn")?.addEventListener("click", async () => {
   const msg = document.getElementById("manualMsg");
   const btn = document.getElementById("manualBtn");
 
-  if (!(amount >= 1000)) { msg.textContent = "Minimum deposit is ₦1,000."; return; }
+  if (!(amount >= 2000)) { msg.textContent = "Minimum deposit is ₦2,000."; return; }
   if (!sender) { msg.textContent = "Enter the sender account name."; return; }
 
   btn.disabled = true;
@@ -284,7 +284,7 @@ async function loadPlans() {
     const stats = el("div", "pl-stats");
     stats.append(
       stat(naira(plan.min_amount), "Min. Investment"),
-      stat(`${plan.return_rate}%`, "Return"),
+      stat(`${plan.return_rate} ₦`, "Daily Return"),
       stat(`${plan.duration_days} Days`, "Duration")
     );
     card.appendChild(stats);
@@ -328,7 +328,7 @@ function updatePreview() {
   if (!(amt > 0)) { box.textContent = "Enter an amount to see your total."; return; }
   const total = amt * (1 + Number(activePlan.return_rate) / 100);
   box.textContent =
-    `Demo total after ${activePlan.duration_days} days: ${naira(total)} ` +
+    `investment total after ${activePlan.duration_days} days: ${naira(total)} ` +
     `(profit ${naira(total - amt)})`;
 }
 
@@ -349,7 +349,7 @@ async function selectPlan(planId) {
   document.getElementById("pmTitle").textContent = plan.name;
   document.getElementById("pmLoc").textContent = plan.location || "";
   document.getElementById("pmMin").textContent = naira(plan.min_amount);
-  document.getElementById("pmRate").textContent = plan.return_rate + "%";
+  document.getElementById("pmRate").textContent = plan.return_rate + " ₦";
   document.getElementById("pmDays").textContent = plan.duration_days + " Days";
   document.getElementById("pmBalance").textContent = naira(walletBalance);
   document.getElementById("pmAmount").value = plan.min_amount;
